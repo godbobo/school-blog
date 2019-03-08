@@ -1,18 +1,15 @@
 <template>
-  <div class="essay-container">
-    <el-row>
-      <el-col :span="24">
-        <div class="edit-container">编辑器</div>
-      </el-col>
-    </el-row>
-  </div>
+  <markdown-editor v-model="content" />
 </template>
 
 <script>
+import MarkdownEditor from '@/components/MarkdownEditor'
 export default {
   name: 'Essay',
+  components: { MarkdownEditor },
   data() {
     return {
+      content: ''
     }
   }
 }
