@@ -4,6 +4,15 @@
       <el-tab-pane label="用户列表" name="lst">
         <div class="table-top-toolbar border-shadow">
           <el-button type="primary" size="small" icon="el-icon-plus" @click="clickAddUser">新增用户</el-button>
+          <el-input v-model="filtertxt" class="input-with-select" placeholder="请输入搜索内容" @change="handleFilterChanged">
+            <el-select slot="prepend" v-model="filtertype" class="select-type">
+              <el-option :value="0" label="不过滤"/>
+              <el-option :value="1" label="按用户id"/>
+              <el-option :value="2" label="按姓名"/>
+              <el-option :value="3" label="按所在院系"/>
+            </el-select>
+            <el-button slot="append" icon="el-icon-search" @click="handleFilterChanged">搜索</el-button>
+          </el-input>
         </div>
         <el-table ref="filterTable" :data="tableData" :stripe="true" style="width: 100%">
           <el-table-column label="选择" type="selection"/>
@@ -95,7 +104,9 @@ export default {
           { type: 'enum', enum: ['0', '1', '2'], message: '非法角色属性', trigger: 'blur' }
         ]
       }, // 表单验证格式
-      adduserbtnloading: false
+      adduserbtnloading: false, // 添加用户按钮的加载状态
+      filtertxt: '', // 查询关键字
+      filtertype: 0
     }
   },
   computed: {
@@ -118,9 +129,12 @@ export default {
     clickAddUser() {
       this.addUserDialogVisible = true
     },
-    handleUserList(index) {
-      this.pageindex = index
-      this.$store.dispatch('UserGetLst', { currentpage: this.pageindex - 1, size: 10 }).then(response => {
+    handleUserList(index = this.pageindex) {
+      if (index !== this.pageindex) {
+        this.pageindex = index
+      }
+      // 得出查询类型
+      this.$store.dispatch('UserGetLst', { currentpage: index - 1, size: 10, type: this.filtertype, arg1: this.filtertxt }).then(response => {
         this.tableData = response.data.lst
         this.tablerows = response.data.total
       })
@@ -145,7 +159,19 @@ export default {
           return false
         }
       })
+    },
+    handleFilterChanged() {
+      this.handleUserList()
     }
   }
 }
 </script>
+
+<style lang="scss" scoped>
+.input-with-select {
+  width: 500px;
+  .select-type {
+    width: 120px;
+  }
+}
+</style>

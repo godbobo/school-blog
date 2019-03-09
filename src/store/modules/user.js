@@ -105,7 +105,7 @@ const user = {
         return
       }
       return new Promise((resolve, reject) => {
-        getUserLst(payload.size, payload.currentpage).then(response => {
+        getUserLst(payload.size, payload.currentpage, payload.type, payload.arg1).then(response => {
           resolve(response)
         }).catch(error => {
           reject(error)

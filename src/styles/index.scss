@@ -89,6 +89,7 @@ a:hover {
   padding: 10px 20px;
   display: flex;
   flex-direction: row-reverse;
+  justify-content: space-between;
   background: $threeBorder;
 }
 
