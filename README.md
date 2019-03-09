@@ -1,2 +1,17 @@
-# school-blog
-A simple blog system for students and teachers.
+# school-blog-vue
+
+上面的项目简介看过没？
+
+英文的哦~
+
+虽然不知道真正的外国人能不能看懂，但，至少我成功地装了一次逼，这才是最重要的。
+
+进入正题，该项目是我做的毕业设计，当然是刚开始做，一切都还没有准备完毕，是一个不折不扣的不值得下载去看的项目，也当作是自己学了四年来开始做的第一个像样点的项目吧。
+
+本项目使用 Vue.js 进行开发，基于[vue-admin-template](https://github.com/PanJiaChen/vue-admin-template)的基础模板进行二次开发，算是省了自己不少事情，而且看他的项目结构和代码自己也能学到不少东西。
+
+当然这只是一个前端项目，也需要配合到我做的后台[school-blog-springboot](https://github.com/godbobo/school-blog-springboot)才能够正常工作。
+
+> 目前项目完整度还不够，就先不放截图了，安装方法呢当然也就先不写了，不过项目必须的文件都在这里的，了解过这方面的大神一定知道怎么安装滴。嘿嘿
+
+嗯，祝自己好运，能早日把这个项目给完成。
