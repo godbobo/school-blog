@@ -2,6 +2,9 @@
   <el-menu class="navbar" mode="horizontal">
     <hamburger :toggle-click="toggleSideBar" :is-active="sidebar.opened" class="hamburger-container"/>
     <breadcrumb />
+    <div class="toolbar-container">
+      <el-button v-if="showSaveBtn" type="primary" size="small" @click="showSaveEssayDialog">保存</el-button>
+    </div>
     <el-dropdown class="avatar-container" trigger="click">
       <div class="avatar-wrapper">
         <img :src="avatar+'?imageView2/1/w/80/h/80'" class="user-avatar">
@@ -33,7 +36,10 @@ export default {
     ...mapGetters([
       'sidebar',
       'avatar'
-    ])
+    ]),
+    showSaveBtn() {
+      return this.$store.getters.essayeditmode
+    }
   },
   methods: {
     toggleSideBar() {
@@ -43,6 +49,9 @@ export default {
       this.$store.dispatch('FedLogOut').then(() => {
         location.reload() // 为了重新实例化vue-router对象 避免bug
       })
+    },
+    showSaveEssayDialog() {
+      this.$store.dispatch('EssayTriggerDialog')
     }
   }
 }
@@ -64,6 +73,12 @@ export default {
     right: 90px;
     top: 16px;
     color: red;
+  }
+  .toolbar-container {
+    height: 50px;
+    display: inline-block;
+    position: absolute;
+    right: 100px;
   }
   .avatar-container {
     height: 50px;
