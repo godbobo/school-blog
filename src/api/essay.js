@@ -19,4 +19,19 @@ function find(essayid) {
   })
 }
 
-export { lst, find }
+// 新增文章
+function essayAdd(title, summary, content, topic = 0) {
+  // 是否添加 topic 在这里判断后在服务器还需要判断，因此设置默认值后直接发送即可
+  return request({
+    url: '/essay/add',
+    method: 'post',
+    data: {
+      'article.title': title,
+      'article.summary': summary,
+      'article.content': content,
+      'topic.id': topic
+    }
+  })
+}
+
+export { lst, find, essayAdd }
