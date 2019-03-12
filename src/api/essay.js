@@ -20,7 +20,7 @@ function find(essayid) {
 }
 
 // 新增文章
-function essayAdd(title, summary, content, topic = 0) {
+function essayAdd(title, summary, content, tags, topic = 0) {
   // 是否添加 topic 在这里判断后在服务器还需要判断，因此设置默认值后直接发送即可
   return request({
     url: '/essay/add',
@@ -29,7 +29,8 @@ function essayAdd(title, summary, content, topic = 0) {
       'article.title': title,
       'article.summary': summary,
       'article.content': content,
-      'topic.id': topic
+      'topic.id': topic,
+      'jsonRest': JSON.stringify(tags)
     }
   })
 }
