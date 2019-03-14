@@ -63,39 +63,17 @@ export const constantRouterMap = [
   browserRouter,
 
   {
-    path: '/work',
-    component: Layout,
-    redirect: '/work/create',
-    name: 'Work',
-    meta: { title: '创作', icon: 'create' },
-    children: [
-      {
-        path: 'product',
-        name: 'Product',
-        component: () => import('@/views/work/product'),
-        meta: { title: '作品', icon: 'product' }
-      },
-      {
-        path: 'create',
-        name: 'Create',
-        component: () => import('@/views/work/create'),
-        meta: { title: '创作', icon: 'add' }
-      }
-    ]
-  },
-
-  {
     path: '/mine',
     component: Layout,
-    redirect: '/mine/message',
+    redirect: '/mine/product',
     name: 'Mine',
     meta: { title: '我的', icon: 'mine' },
     children: [
       {
-        path: 'message',
-        name: 'Message',
-        component: () => import('@/views/mine/message'),
-        meta: { title: '消息', icon: 'message' }
+        path: 'product',
+        name: 'Product',
+        component: () => import('@/views/mine/product'),
+        meta: { title: '作品', icon: 'product' }
       },
       {
         path: 'like',
@@ -104,16 +82,22 @@ export const constantRouterMap = [
         meta: { title: '收藏', icon: 'like' }
       },
       {
-        path: 'profile',
-        name: 'Profile',
-        component: () => import('@/views/mine/profile'),
-        meta: { title: '资料', icon: 'profile' }
-      },
-      {
         path: 'tags',
         name: 'Tags',
         component: () => import('@/views/mine/tags'),
         meta: { title: '标签', icon: 'tag' }
+      },
+      {
+        path: 'message',
+        name: 'Message',
+        component: () => import('@/views/mine/message'),
+        meta: { title: '消息', icon: 'message' }
+      },
+      {
+        path: 'profile',
+        name: 'Profile',
+        component: () => import('@/views/mine/profile'),
+        meta: { title: '资料', icon: 'profile' }
       }
     ]
   },
@@ -132,23 +116,48 @@ export const constantRouterMap = [
   },
 
   {
+    path: '/create',
+    component: Layout,
+    children: [
+      {
+        path: '',
+        name: 'Creating',
+        component: () => import('@/views/create'),
+        meta: { title: '创建', icon: 'add' }
+      }
+    ]
+  },
+
+  {
     path: '/admin',
     component: Layout,
     redirect: '/admin/user',
-    meta: { title: '管理', icon: 'mine' },
+    meta: { title: '管理', icon: 'tree' },
     name: 'Admin',
     children: [
+      {
+        path: 'system',
+        name: 'ManageSystem',
+        component: () => import('@/views/admin/system'),
+        meta: { title: '系统管理', icon: 'system' }
+      },
       {
         path: 'user',
         name: 'ManageUser',
         component: () => import('@/views/admin/user'),
-        meta: { title: '用户管理', icon: 'setting' }
+        meta: { title: '用户管理', icon: 'user' }
       },
       {
         path: 'essay',
         name: 'ManageEssay',
         component: () => import('@/views/admin/essay'),
-        meta: { title: '文章管理', icon: 'setting' }
+        meta: { title: '文章管理', icon: 'essay' }
+      },
+      {
+        path: 'topic',
+        name: 'ManageTopic',
+        component: () => import('@/views/admin/topic'),
+        meta: { title: '话题管理', icon: 'topic' }
       }
     ]
   },

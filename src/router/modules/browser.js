@@ -22,11 +22,11 @@ const browserRouter = {
           hide: true,
           component: () => import('@/views/browser/essay/lst'),
           name: 'EssayLst',
-          meta: { title: '列表' }
+          meta: { title: '文章', icon: 'essay' }
         },
         {
           path: 'detail',
-          hide: true,
+          hidden: true,
           component: () => import('@/views/browser/essay/detail'),
           name: 'EssayDetail',
           meta: { title: '详情' }
@@ -45,11 +45,11 @@ const browserRouter = {
           hide: true,
           component: () => import('@/views/browser/topic/lst'),
           name: 'TopicLst',
-          meta: { title: '列表' }
+          meta: { title: '话题', icon: 'topic' }
         },
         {
           path: 'detail',
-          hide: true,
+          hidden: true,
           component: () => import('@/views/browser/topic/detail'),
           name: 'TopicDetail',
           meta: { title: '详情' }

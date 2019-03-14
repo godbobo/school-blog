@@ -43,6 +43,8 @@
 </template>
 
 <script>
+import { lst } from '@/api/essay'
+
 export default {
   name: 'Essay',
   data() {
@@ -69,9 +71,12 @@ export default {
     }
   },
   created() {
-    // 创建组件后需要做的工作
-    this.$store.dispatch('EssayLst').then(() => {
-      this.lst = this.$store.state.essaylst
+    // 获取文章列表
+    lst().then(response => {
+      const data = response.data
+      this.lst = data.lst
+    }).catch(error => {
+      console.log(error)
     })
   },
   methods: {

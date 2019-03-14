@@ -6,8 +6,6 @@ const getters = {
   name: state => state.user.name,
   roles: state => state.user.roles,
   // 文章模块
-  essaylst: state => state.essay.lst,
-  essay: state => state.essay.essay,
   essayeditmode: state => state.essay.essayeditmode,
   essaysavevisible: state => state.essay.essaysavevisible
 }
