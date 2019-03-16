@@ -1,10 +1,15 @@
 import request from '@/utils/request'
 
 // 获取文章列表
-function lst() {
+function lst(page, rows, type) {
   return request({
     url: '/essay/lst',
-    method: 'post'
+    method: 'post',
+    data: {
+      page: page,
+      row: rows,
+      queryTyppe: type
+    }
   })
 }
 
@@ -15,6 +20,30 @@ function find(essayid) {
     method: 'post',
     data: {
       id: essayid
+    }
+  })
+}
+
+// 置顶与取消置顶
+function essaySetTop(id, state) {
+  return request({
+    url: '/essay/update',
+    method: 'post',
+    data: {
+      'article.id': id,
+      'article.top': state
+    }
+  })
+}
+
+// 隐藏与取消隐藏
+function essaySetHide(id, state) {
+  return request({
+    url: '/essay/update',
+    method: 'post',
+    data: {
+      'article.id': id,
+      'article.hide': state
     }
   })
 }
@@ -35,4 +64,4 @@ function essayAdd(title, summary, content, tags, topic = 0) {
   })
 }
 
-export { lst, find, essayAdd }
+export { lst, find, essayAdd, essaySetHide, essaySetTop }
