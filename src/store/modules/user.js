@@ -40,6 +40,7 @@ const user = {
           if (data.user && data.user.role > -1) { // 验证返回的用户的合法性
             commit('SET_ROLES', data.user.role) // 获取到数据之后就可以将其存储到 store 了
             commit('SET_NAME', data.user.name)
+            commit('SET_AVATAR', data.user.headimg)
           } else {
             reject('非法用户角色!') // 向外抛出错误信息
           }
@@ -54,11 +55,13 @@ const user = {
     // 获取用户信息
     GetInfo({ commit, state }) {
       return new Promise((resolve, reject) => {
+        console.log('info')
         getInfo(state.token).then(response => {
           const data = response.data
           if (data.user && data.user.role > -1) { // 验证返回的用户的合法性
             commit('SET_ROLES', data.user.role) // 获取到数据之后就可以将其存储到 store 了
             commit('SET_NAME', data.user.name)
+            commit('SET_AVATAR', data.user.headimg)
           } else {
             reject('非法用户角色!') // 向外抛出错误信息
           }

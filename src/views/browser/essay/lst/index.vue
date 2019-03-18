@@ -1,126 +1,99 @@
 <template>
-  <div class="essay-container index-container">
-    <el-row :gutter="15">
+  <div class="index-container">
+    <el-row :gutter="30">
       <el-col :span="16">
-        <div class="essay-list-container">
-          <el-card v-for="(item, index) in lst" :key="index" class="box-card essay-item">
-            <div slot="header">
-              <a @click="jump">{{ item.title }}</a>
-              <div class="essay-more-container">
-                <span class="second-text">浏览：{{ item.view }}</span>
-                <span class="second-text">收藏：0</span>
-                <span class="second-text">评论：0</span>
+        <el-card>
+          <div slot="header" class="part-header flex-row-container">
+            <h4 class="el-icon-document"> 文章列表</h4>
+            <el-button type="text" class="header-button" icon="el-icon-refresh">刷新</el-button>
+          </div>
+          <div class="part-body">
+            <div v-for="o in 4" :key="o" class="item">
+              <router-link to="/browser/essay/detail/23" class="item-header"><span style="color: #409EFF;"><svg-icon icon-class="top"/></span> 十大经典算法总结 - 做个隐士 - 博客园</router-link>
+              <p class="item-body">十大经典算法总结十大经典算法总结十大经典算法总结十大经典算法总结十大经典算法总结十大经典算法总结十大经典算法总结十大经典算法总结十大经典算法总结十大经典算法总结十大经典算法总结十大经典算法总结十大经典算法总结</p>
+              <div class="item-footer flex-row-container">
+                <div class="left">
+                  <el-tag type="info">标签三</el-tag>
+                  <el-tag type="info">标签三</el-tag>
+                  <el-tag type="info">标签三</el-tag>
+                  <div class="count">
+                    <span style="color: green;"><svg-icon icon-class="eye-open"/> 12</span>
+                    <span style="color: pink;"><svg-icon icon-class="like"/> 12</span>
+                  </div>
+                </div>
+                <div class="right">
+                  <span class="timestamp">老王 创作于 2019-03-16</span>
+                </div>
               </div>
             </div>
-            <div>
-              <p class="second-text">{{ item.summary }}</p>
-            </div>
-            <div>
-              <!-- <el-tag v-for="(it, v) in item.tags" :key="v" class="essay-tag">{{ it.name }}</el-tag> -->
-              <span class="second-text essay-time">{{ item.upt }}</span>
-            </div>
-          </el-card>
-        </div>
-        <el-pagination
-          :total="1000"
-          background
-          layout="prev, pager, next"/>
+            <el-pagination :total="1000" class="page" background layout="prev, pager, next"/>
+          </div>
+        </el-card>
       </el-col>
       <el-col :span="8">
-        <div class="essay-option-container">
-          <el-card class="box-card">
-            <div slot="header">
-              <span>推荐</span>
+        <el-card>
+          <div slot="header" class="part-header flex-row-container">
+            <h4><svg-icon icon-class="recommand"/> 推荐列表</h4>
+          </div>
+          <div class="part-body">
+            <div v-for="o in 4" :key="o" class="item">
+              <a class="item-header"><span style="color: red;"><svg-icon icon-class="topic"/></span> 十大经典算法总结 - 做个隐士 - 博客园</a>
             </div>
-            <div>
-              <a v-for="(item,index) in recommands" :key="index" class="recommand-item" href="www.baidu.com?q={item.id}">{{ item.title }}</a>
-            </div>
-          </el-card>
-        </div>
+          </div>
+        </el-card>
       </el-col>
     </el-row>
   </div>
 </template>
 
-<script>
-import { lst } from '@/api/essay'
+<style lang="scss" scoped>
+@import '@/styles/variables.scss';
 
-export default {
-  name: 'Essay',
-  data() {
-    return {
-      lst: [],
-      recommands: [
-        {
-          id: 213,
-          title: '推荐1'
-        },
-        {
-          id: 212,
-          title: '推荐2'
-        },
-        {
-          id: 213,
-          title: '推荐3'
-        },
-        {
-          id: 243,
-          title: '推荐4'
-        }
-      ]
-    }
-  },
-  created() {
-    // 获取文章列表
-    lst().then(response => {
-      const data = response.data
-      this.lst = data.lst
-    }).catch(error => {
-      console.log(error)
-    })
-  },
-  methods: {
-    jump() {
-      // this.$router.push('/browser/essay/detail')
-    }
+.part-header {
+  justify-content: space-between;
+  h4 {
+    display: inline-block;
+    font-size: 18px;
+    margin: 0;
+  }
+  .header-button {
+    padding: 0;
   }
 }
-</script>
 
-<style>
-.index-container{
-  padding: 20px;
-}
-.second-text{
-  color: grey;
-  font-size: 14px;
-}
-</style>
-
-<style scoped>
-.essay-list-container{
-  min-height: 500px;
-  margin-bottom: 20px;
-}
-.essay-option-container{
-  min-height: 300px;
-  margin-top: 7px;
-}
-.essay-item{
-  margin: 7px 0;
-}
-.essay-time{
-  float: right;
-}
-.essay-tag{
-  margin: 0 2px;
-}
-.essay-more-container{
-  float: right;
-}
-
-.recommand-item{
-  display: block;
-  margin: 5px 0;
+.part-body {
+  .item {
+    .item-header {
+      display: inline-block;
+      color: black;
+      font-size: 18px;
+      font-weight: bold;
+      padding-top: 15px;
+    }
+    .item-body {
+      color: $secondaryTxt;
+      font-size: 14px;
+      line-height: 22px;
+    }
+    .item-footer {
+      justify-content: space-between;
+      .left {
+        .count {
+          display: inline;
+          margin-left: 10px;
+        }
+      }
+      .right {
+        .timestamp {
+          color: $holdTxt;
+          font-size: 12px;
+          line-height: 32px;
+        }
+      }
+    }
+  }
+  .page {
+    margin-top: 20px;
+  }
 }
 </style>

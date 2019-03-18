@@ -14,11 +14,11 @@
     </div>
     <el-table ref="filterTable" :data="tableData" :stripe="true" style="width: 100%">
       <el-table-column label="选择" type="selection" />
-      <el-table-column prop="id" label="编号" sortable column-key="id" />
+      <el-table-column prop="id" label="编号" sortable column-key="id" width="80px"/>
       <el-table-column prop="title" label="标题" />
       <el-table-column prop="topic.name" label="所属话题" sortable/>
       <el-table-column prop="author.name" label="作者" sortable/>
-      <el-table-column prop="view" label="浏览量" sortable/>
+      <el-table-column prop="view" label="浏览量" sortable width="100px"/>
       <el-table-column prop="upt" label="更新时间" />
       <el-table-column label="操作" prop="top" width="250px">
         <template slot-scope="scope">
@@ -54,8 +54,11 @@ export default {
   methods: {
     formatter(row, column, cellValue) {
     },
-    handleLst() {
-      lst(this.pageindex - 1, 20, 1).then(response => {
+    handleLst(index = this.pageindex) {
+      if (index !== this.pageindex) {
+        this.pageindex = index
+      }
+      lst(this.pageindex - 1, 10, 1).then(response => {
         if (response.code === 0) {
           this.tableData = response.data.lst
           this.tablerows = response.data.total
@@ -68,7 +71,7 @@ export default {
         if (response.code === 0) {
           const temp = this.tableData
           temp[index].top = !row.top
-          this.tableData = temp
+          this.tableData = Object.assign({}, temp)
         }
       })
     },
@@ -78,7 +81,7 @@ export default {
         if (response.code === 0) {
           const temp = this.tableData
           temp[index].hide = !row.hide
-          this.tableData = temp
+          this.tableData = Object.assign({}, temp)
         }
       })
     },

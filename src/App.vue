@@ -5,7 +5,11 @@
 </template>
 
 <script>
+
 export default {
-  name: 'App'
+  name: 'App',
+  created() {
+    this.$store.dispatch('GetInfo')
+  }
 }
 </script>

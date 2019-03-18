@@ -14,11 +14,11 @@
     </div>
     <el-table ref="filterTable" :data="tableData" :stripe="true" style="width: 100%">
       <el-table-column label="选择" type="selection" />
-      <el-table-column prop="id" label="编号" sortable column-key="id" />
+      <el-table-column prop="id" label="编号" sortable column-key="id" width="80px" />
       <el-table-column prop="title" label="标题" />
       <el-table-column prop="topic.name" label="标签"/>
       <el-table-column prop="author.name" label="创建者" sortable/>
-      <el-table-column prop="view" label="文章数量" sortable/>
+      <el-table-column prop="view" label="文章数量" sortable width="100px"/>
       <el-table-column prop="upt" label="创建时间" />
       <el-table-column label="操作" prop="top">
         <template slot-scope="scope">

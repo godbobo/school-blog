@@ -147,10 +147,8 @@ export default {
             this.adduserbtnloading = false
             this.addUserDialogVisible = false
             // 若增加用户成功则刷新列表
-            if (response.data === 0) {
-              this.$store.dispatch('UserGetLst').then(response => {
-                this.tableData = response.data.lst
-              })
+            if (response.code === 0) {
+              this.handleUserList()
             }
           }).catch(() => {
             this.adduserbtnloading = false

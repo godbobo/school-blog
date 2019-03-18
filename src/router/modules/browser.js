@@ -14,7 +14,6 @@ const browserRouter = {
       path: 'essay',
       component: () => import('@/views/browser/essay/index'),
       name: 'Essay',
-      meta: { title: '文章' },
       redirect: '/browser/essay/lst',
       children: [
         {
@@ -25,7 +24,7 @@ const browserRouter = {
           meta: { title: '文章', icon: 'essay' }
         },
         {
-          path: 'detail',
+          path: 'detail/:id',
           hidden: true,
           component: () => import('@/views/browser/essay/detail'),
           name: 'EssayDetail',
@@ -37,7 +36,6 @@ const browserRouter = {
       path: 'topic',
       component: () => import('@/views/browser/topic/index'),
       name: 'Topic',
-      meta: { title: '话题' },
       redirect: '/browser/topic/lst',
       children: [
         {
@@ -48,7 +46,7 @@ const browserRouter = {
           meta: { title: '话题', icon: 'topic' }
         },
         {
-          path: 'detail',
+          path: 'detail/:id',
           hidden: true,
           component: () => import('@/views/browser/topic/detail'),
           name: 'TopicDetail',
