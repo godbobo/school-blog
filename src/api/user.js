@@ -29,4 +29,27 @@ function addUser(...values) {
   })
 }
 
-export { getUserLst, addUser }
+// 计算用户关联表的行数量
+function userCount(id) {
+  return request({
+    url: '/user/countUser',
+    method: 'post',
+    data: {
+      'user.id': id
+    }
+  })
+}
+
+// 关注/取消关注用户
+function userFollow(id, type) {
+  return request({
+    url: '/user/follow',
+    method: 'post',
+    data: {
+      'user.id': id,
+      queryType: type
+    }
+  })
+}
+
+export { getUserLst, addUser, userCount, userFollow }

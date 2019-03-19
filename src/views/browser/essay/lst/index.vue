@@ -5,28 +5,26 @@
         <el-card>
           <div slot="header" class="part-header flex-row-container">
             <h4 class="el-icon-document"> 文章列表</h4>
-            <el-button type="text" class="header-button" icon="el-icon-refresh">刷新</el-button>
+            <el-button type="text" class="header-button" icon="el-icon-refresh" @click="refresh">刷新</el-button>
           </div>
           <div class="part-body">
-            <div v-for="o in 4" :key="o" class="item">
-              <router-link to="/browser/essay/detail/23" class="item-header"><span style="color: #409EFF;"><svg-icon icon-class="top"/></span> 十大经典算法总结 - 做个隐士 - 博客园</router-link>
-              <p class="item-body">十大经典算法总结十大经典算法总结十大经典算法总结十大经典算法总结十大经典算法总结十大经典算法总结十大经典算法总结十大经典算法总结十大经典算法总结十大经典算法总结十大经典算法总结十大经典算法总结十大经典算法总结</p>
+            <div v-for="(item, index) in lst" :key="index" class="item">
+              <router-link :to="'/browser/essay/detail/' + item.id" class="item-header"><span v-if="item.top === 1" style="color: #409EFF;"><svg-icon icon-class="top"/> </span>{{ item.title }}</router-link>
+              <p class="item-body">{{ item.summary }}</p>
               <div class="item-footer flex-row-container">
                 <div class="left">
-                  <el-tag type="info">标签三</el-tag>
-                  <el-tag type="info">标签三</el-tag>
-                  <el-tag type="info">标签三</el-tag>
+                  <el-tag v-for="(tag, tindex) in item.tags" :key="tindex" :color="tag.background" :style="{ color: tag.color }" :hit="true" class="tag">{{ tag.name }}</el-tag>
                   <div class="count">
-                    <span style="color: green;"><svg-icon icon-class="eye-open"/> 12</span>
-                    <span style="color: pink;"><svg-icon icon-class="like"/> 12</span>
+                    <span style="color: green;"><svg-icon icon-class="eye-open"/> {{ item.view }}</span>
+                    <span style="color: pink;"><svg-icon icon-class="like"/> {{ lovercount(index) }} </span>
                   </div>
                 </div>
                 <div class="right">
-                  <span class="timestamp">老王 创作于 2019-03-16</span>
+                  <span class="timestamp">{{ item.author.name }} 创作于 {{ item.upt }}</span>
                 </div>
               </div>
             </div>
-            <el-pagination :total="1000" class="page" background layout="prev, pager, next"/>
+            <el-pagination :total="total" :page-size="rows" class="page" background layout="prev, pager, next" @current-change="onPageChange"/>
           </div>
         </el-card>
       </el-col>
@@ -36,8 +34,8 @@
             <h4><svg-icon icon-class="recommand"/> 推荐列表</h4>
           </div>
           <div class="part-body">
-            <div v-for="o in 4" :key="o" class="item">
-              <a class="item-header"><span style="color: red;"><svg-icon icon-class="topic"/></span> 十大经典算法总结 - 做个隐士 - 博客园</a>
+            <div v-for="(rditem, index) in recommandlst" :key="index" class="item">
+              <router-link :to="'/browser/essay/detail/' + rditem.id" class="item-header"><span style="color: red;"><svg-icon icon-class="topic"/></span> {{ rditem.title }}</router-link>
             </div>
           </div>
         </el-card>
@@ -45,6 +43,57 @@
     </el-row>
   </div>
 </template>
+
+<script>
+import { lst } from '@/api/essay'
+
+export default {
+  name: 'EssayLst',
+  data() {
+    return {
+      lst: [], // 按时间倒序列表
+      recommandlst: [], // 推荐列表
+      total: 0, // 结果总数
+      rows: 20, // 每页显示数量
+      pageindex: 1
+    }
+  },
+  computed: {
+    lovercount() {
+      return function(index) {
+        return this.lst[index].lovers ? this.lst[index].lovers.length : 0
+      }
+    }
+  },
+  created() {
+    this.handleLst()
+  },
+  methods: {
+    handleLst() {
+      lst(this.pageindex - 1, this.rows, 0).then(response => {
+        if (response.code === 0) {
+          // 当第一页时显示置顶文章
+          if (this.pageindex === 1 && response.data.toplst) {
+            this.lst = [...response.data.toplst, ...response.data.lst]
+          } else {
+            this.lst = response.data.lst
+          }
+          this.recommandlst = response.data.recommandlst
+          this.total = response.data.total
+        }
+      })
+    },
+    refresh() {
+      this.pageindex = 1
+      this.handleLst()
+    },
+    onPageChange(val) {
+      this.pageindex = val
+      this.handleLst(val)
+    }
+  }
+}
+</script>
 
 <style lang="scss" scoped>
 @import '@/styles/variables.scss';
@@ -69,6 +118,9 @@
       font-size: 18px;
       font-weight: bold;
       padding-top: 15px;
+      &:hover {
+        color: red;
+      }
     }
     .item-body {
       color: $secondaryTxt;
@@ -78,6 +130,9 @@
     .item-footer {
       justify-content: space-between;
       .left {
+        .tag {
+          margin-left: 10px;
+        }
         .count {
           display: inline;
           margin-left: 10px;

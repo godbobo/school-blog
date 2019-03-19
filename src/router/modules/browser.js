@@ -25,6 +25,7 @@ const browserRouter = {
         },
         {
           path: 'detail/:id',
+          props: true,
           hidden: true,
           component: () => import('@/views/browser/essay/detail'),
           name: 'EssayDetail',
@@ -47,6 +48,7 @@ const browserRouter = {
         },
         {
           path: 'detail/:id',
+          props: true,
           hidden: true,
           component: () => import('@/views/browser/topic/detail'),
           name: 'TopicDetail',

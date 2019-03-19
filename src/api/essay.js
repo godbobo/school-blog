@@ -8,18 +8,41 @@ function lst(page, rows, type) {
     data: {
       page: page,
       row: rows,
-      queryTyppe: type
+      queryType: type
+    }
+  })
+}
+
+// 获取指定id下文章
+function essayLstAbout(id) {
+  return request({
+    url: '/essay/lstAbout',
+    method: 'post',
+    data: {
+      'topic.id': id
     }
   })
 }
 
 // 根据文章 id 查询文章
-function find(essayid) {
+function find(essayid, type) {
   return request({
     url: '/essay/find',
     method: 'post',
     data: {
-      id: essayid
+      'article.id': essayid,
+      queryType: type
+    }
+  })
+}
+
+// 收藏文章
+function essaySetLike(id) {
+  return request({
+    url: '/essay/like',
+    method: 'post',
+    data: {
+      'article.id': id
     }
   })
 }
@@ -64,4 +87,4 @@ function essayAdd(title, summary, content, tags, topic = 0) {
   })
 }
 
-export { lst, find, essayAdd, essaySetHide, essaySetTop }
+export { lst, essayLstAbout, find, essayAdd, essaySetHide, essaySetTop, essaySetLike }
