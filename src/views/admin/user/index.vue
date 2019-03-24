@@ -43,7 +43,7 @@
             </template>
           </el-table-column>
         </el-table>
-        <el-pagination :total="tablerows" :current-page="pageindex" class="pagination-margin" background layout="prev, pager, next" @current-change="handleUserList"/>
+        <el-pagination :total="tablerows" :page-size="rows" :current-page="pageindex" class="pagination-margin" background layout="prev, pager, next" @current-change="handlePageChanged"/>
       </el-tab-pane>
       <el-tab-pane label="批量增加" name="add">配置管理</el-tab-pane>
     </el-tabs>
@@ -80,6 +80,7 @@ export default {
       activeName: 'lst', // 当前 tab 页面
       tableData: [], // 表格中用户数据
       tablerows: 0, // 查询结果总数
+      rows: 15, // 每页显示数量
       pageindex: 1, // 当前页,分页使用该默认值作为起点，但服务器端使用0作为起点
       addUserDialogVisible: false, // 添加用户弹出框
       userform: {
@@ -129,12 +130,9 @@ export default {
     clickAddUser() {
       this.addUserDialogVisible = true
     },
-    handleUserList(index = this.pageindex) {
-      if (index !== this.pageindex) {
-        this.pageindex = index
-      }
+    handleUserList() {
       // 得出查询类型
-      this.$store.dispatch('UserGetLst', { currentpage: index - 1, size: 10, type: this.filtertype, arg1: this.filtertxt }).then(response => {
+      this.$store.dispatch('UserGetLst', { currentpage: this.pageindex - 1, size: this.rows, type: this.filtertype, arg1: this.filtertxt }).then(response => {
         this.tableData = response.lst
         this.tablerows = response.total
       })
@@ -158,6 +156,11 @@ export default {
       })
     },
     handleFilterChanged() {
+      this.pageindex = 1
+      this.handleUserList()
+    },
+    handlePageChanged(val) {
+      this.pageindex = val
       this.handleUserList()
     }
   }

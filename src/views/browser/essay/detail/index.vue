@@ -11,7 +11,9 @@
               <span v-if="essay.topic">所属话题：{{ essay.topic.name }}</span>
             </div>
           </div>
-          <viewer :value="essay.content"/>
+          <transition name="fade">
+            <viewer v-loading="isloading" v-if="essay.content.length > 0" :value="essay.content"/>
+          </transition>
         </el-card>
         <el-card class="comment-card">
           <div slot="header" class="header">
@@ -29,20 +31,22 @@
             <h2>评论列表</h2>
             <hr>
             <div class="list">
-              <div v-for="(commentitem, cindex) in commentlst" :key="cindex" class="item flex-row-container">
-                <div class="user-info flex-row-container">
-                  <img :src="commentitem.creator.headimg">
-                  <div class="name-wrap">
-                    <span class="name">{{ commentitem.creator.name }}：</span>
+              <transition-group name="list">
+                <div v-for="(commentitem, cindex) in commentlst" :key="cindex" class="item flex-row-container">
+                  <div class="user-info flex-row-container">
+                    <img :src="commentitem.creator.headimg">
+                    <div class="name-wrap">
+                      <span class="name">{{ commentitem.creator.name }}：</span>
+                    </div>
+                  </div>
+                  <div class="content">
+                    <p>{{ commentitem.content }}</p>
+                    <div class="bottom">
+                      <span class="time">{{ commentitem.upt }}</span>
+                    </div>
                   </div>
                 </div>
-                <div class="content">
-                  <p>{{ commentitem.content }}</p>
-                  <div class="bottom">
-                    <span class="time">{{ commentitem.upt }}</span>
-                  </div>
-                </div>
-              </div>
+              </transition-group>
             </div>
             <el-pagination :total="commenttotal" :current-page="commentpage" :page-size="commentrows" class="page" background layout="prev, pager, next" @current-change="onPageChanged"/>
           </div>
@@ -149,7 +153,8 @@ export default {
       commenttotal: 0, // 评论数量
       commentrows: 6, // 每页显示评论数量
       commentpage: 1, // 评论列表当前页
-      isfav: false
+      isfav: false, // 是否已收藏该文章
+      isloading: false
     }
   },
   computed: {
@@ -173,7 +178,9 @@ export default {
   },
   methods: {
     handleDetail() {
+      this.isloading = true
       find(this.id, 0).then(response => {
+        this.isloading = false
         this.essay = response.essay
         this.isfav = response.isfav
         this.handleCount(this.essay.author.id)
@@ -182,6 +189,7 @@ export default {
           this.handleLst(this.essay.topic.id)
         }
       }).catch(() => {
+        this.isloading = false
         // 文章获取失败则重定向到404页面
         this.$router.replace('/404')
       })

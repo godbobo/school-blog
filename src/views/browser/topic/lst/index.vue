@@ -7,23 +7,25 @@
             <h4 class="el-icon-document"> 话题列表</h4>
             <el-button type="text" class="header-button" icon="el-icon-refresh" @click="handleRefresh">刷新</el-button>
           </div>
-          <div class="part-body">
-            <div v-for="(titem, tindex) in lst" :key="tindex" class="item">
-              <router-link :to="'/browser/topic/detail/' + titem.id" class="item-header">{{ titem.name }}</router-link>
-              <p class="item-body">{{ titem.summary }}</p>
-              <div class="item-footer flex-row-container">
-                <div class="left">
-                  <el-tag v-for="(tag, tidx) in titem.tags" :key="tidx" :color="tag.background" :style="{ color: tag.color }" :hit="true" class="tag">{{ tag.name }}</el-tag>
-                  <div class="count">
-                    <span style="color: #409EFF;"><svg-icon icon-class="user"/> {{ titem.usercount }}</span>
-                    <span style="color: #67C23A;" class="el-icon-document"> {{ titem.essaycount }}</span>
+          <div v-loading="lstLoading" class="part-body">
+            <transition-group name="list">
+              <div v-for="(titem, tindex) in lst" :key="tindex" class="item">
+                <router-link :to="'/browser/topic/detail/' + titem.id" class="item-header">{{ titem.name }}</router-link>
+                <p class="item-body">{{ titem.summary }}</p>
+                <div class="item-footer flex-row-container">
+                  <div class="left">
+                    <el-tag v-for="(tag, tidx) in titem.tags" :key="tidx" :color="tag.background" :style="{ color: tag.color }" :hit="true" class="tag">{{ tag.name }}</el-tag>
+                    <div class="count">
+                      <span style="color: #409EFF;"><svg-icon icon-class="user"/> {{ titem.usercount }}</span>
+                      <span style="color: #67C23A;" class="el-icon-document"> {{ titem.essaycount }}</span>
+                    </div>
+                  </div>
+                  <div class="right">
+                    <span class="timestamp">{{ titem.creator.name }} 创建于 {{ titem.upt }}</span>
                   </div>
                 </div>
-                <div class="right">
-                  <span class="timestamp">{{ titem.creator.name }} 创建于 {{ titem.upt }}</span>
-                </div>
               </div>
-            </div>
+            </transition-group>
             <el-pagination :total="total" :page-size="row" class="page" background layout="prev, pager, next" @current-change="handlePageChange"/>
           </div>
         </el-card>
@@ -54,7 +56,8 @@ export default {
       row: 15, // 每页数量
       currentpage: 1, // 当前页数
       total: 0, // 话题总数
-      aboutlst: []
+      aboutlst: [], // 相关话题推荐
+      lstLoading: false
     }
   },
   created() {
@@ -63,9 +66,13 @@ export default {
   },
   methods: {
     getLst() {
+      this.lstLoading = true
       topic.lst(this.currentpage - 1, this.row).then(data => {
+        this.lstLoading = false
         this.lst = data.lst
         this.total = data.total
+      }).catch(() => {
+        this.lstLoading = false
       })
     },
     getAboutLst() {

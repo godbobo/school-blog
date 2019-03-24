@@ -7,25 +7,28 @@
             <h4 class="el-icon-document"> 文章列表</h4>
             <el-button type="text" class="header-button" icon="el-icon-refresh" @click="refresh">刷新</el-button>
           </div>
-          <div class="part-body">
-            <div v-for="(item, index) in lst" :key="index" class="item">
-              <router-link :to="'/browser/essay/detail/' + item.id" class="item-header"><span v-if="item.top === 1" style="color: #409EFF;"><svg-icon icon-class="top"/> </span>{{ item.title }}</router-link>
-              <p class="item-body">{{ item.summary }}</p>
-              <div class="item-footer flex-row-container">
-                <div class="left">
-                  <el-tag v-for="(tag, tindex) in item.tags" :key="tindex" :color="tag.background" :style="{ color: tag.color }" :hit="true" class="tag">{{ tag.name }}</el-tag>
-                  <div class="count">
-                    <span style="color: green;"><svg-icon icon-class="eye-open"/> {{ item.view }}</span>
-                    <span style="color: pink;"><svg-icon icon-class="like"/> {{ lovercount(index) }} </span>
+          <div v-loading="isloading" class="part-body">
+            <transition-group name="list">
+              <div v-for="(item, index) in lst" :key="index" class="item">
+                <router-link :to="'/browser/essay/detail/' + item.id" class="item-header"><span v-if="item.top === 1" style="color: #409EFF;"><svg-icon icon-class="top"/> </span>{{ item.title }}</router-link>
+                <p class="item-body">{{ item.summary }}</p>
+                <div class="item-footer flex-row-container">
+                  <div class="left">
+                    <el-tag v-for="(tag, tindex) in item.tags" :key="tindex" :color="tag.background" :style="{ color: tag.color }" :hit="true" class="tag">{{ tag.name }}</el-tag>
+                    <div class="count">
+                      <span style="color: green;"><svg-icon icon-class="eye-open"/> {{ item.view }}</span>
+                      <span style="color: pink;"><svg-icon icon-class="like"/> {{ lovercount(index) }} </span>
+                    </div>
+                  </div>
+                  <div class="right">
+                    <span class="timestamp">{{ item.author.name }} 创作于 {{ item.upt }}</span>
                   </div>
                 </div>
-                <div class="right">
-                  <span class="timestamp">{{ item.author.name }} 创作于 {{ item.upt }}</span>
-                </div>
               </div>
-            </div>
-            <el-pagination :total="total" :page-size="rows" class="page" background layout="prev, pager, next" @current-change="onPageChange"/>
+            </transition-group>
+            <el-pagination :total="total" :current-page="pageindex" :page-size="rows" class="page" background layout="prev, pager, next" @current-change="onPageChange"/>
           </div>
+
         </el-card>
       </el-col>
       <el-col :span="8">
@@ -33,11 +36,13 @@
           <div slot="header" class="part-header flex-row-container">
             <h4><svg-icon icon-class="recommand"/> 推荐列表</h4>
           </div>
-          <div class="part-body">
-            <div v-for="(rditem, index) in recommandlst" :key="index" class="item">
-              <router-link :to="'/browser/essay/detail/' + rditem.id" class="item-header"><span style="color: red;"><svg-icon icon-class="topic"/></span> {{ rditem.title }}</router-link>
+          <transition appear>
+            <div v-loading="isloading" class="part-body">
+              <div v-for="(rditem, index) in recommandlst" :key="index" class="item">
+                <router-link :to="'/browser/essay/detail/' + rditem.id" class="item-header"><span style="color: red;"><svg-icon icon-class="topic"/></span> {{ rditem.title }}</router-link>
+              </div>
             </div>
-          </div>
+          </transition>
         </el-card>
       </el-col>
     </el-row>
@@ -46,6 +51,7 @@
 
 <script>
 import { lst } from '@/api/essay'
+import jump from 'jump.js'
 
 export default {
   name: 'EssayLst',
@@ -54,8 +60,9 @@ export default {
       lst: [], // 按时间倒序列表
       recommandlst: [], // 推荐列表
       total: 0, // 结果总数
-      rows: 20, // 每页显示数量
-      pageindex: 1
+      rows: 15, // 每页显示数量
+      pageindex: 1, // 当前页
+      isloading: false
     }
   },
   computed: {
@@ -70,7 +77,9 @@ export default {
   },
   methods: {
     handleLst() {
+      this.isloading = true
       lst(this.pageindex - 1, this.rows, 0).then(response => {
+        this.isloading = false
         // 当第一页时显示置顶文章
         if (this.pageindex === 1 && response.toplst) {
           this.lst = [...response.toplst, ...response.lst]
@@ -79,10 +88,13 @@ export default {
         }
         this.recommandlst = response.recommandlst
         this.total = response.total
+      }).catch(() => {
+        this.isloading = false
       })
     },
     refresh() {
       this.pageindex = 1
+      jump('body')
       this.handleLst()
     },
     onPageChange(val) {
@@ -149,4 +161,5 @@ export default {
     margin-top: 20px;
   }
 }
+
 </style>

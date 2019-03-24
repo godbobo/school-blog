@@ -11,22 +11,25 @@
         <span slot="label">
           <svg-icon icon-class="list"/>文章列表
         </span>
-        <div v-for="(essay, idx) in essaylst" :key="idx" class="item">
-          <router-link :to="'/browser/essay/detail/' + essay.id" class="item-header">{{ essay.title }}</router-link>
-          <p class="item-body">{{ essay.summary }}</p>
-          <div class="item-footer flex-row-container">
-            <div class="left">
-              <el-tag v-for="(tag, tindex) in essay.tags" :key="tindex" :color="tag.background" :style="{ color: tag.color }" :hit="true" class="tag">{{ tag.name }}</el-tag>
-              <div class="count">
-                <span style="color: green;"><svg-icon icon-class="eye-open"/> {{ essay.view }}</span>
-                <span style="color: pink;"><svg-icon icon-class="like"/> {{ essay.lovercount }}</span>
+        <transition-group name="list">
+          <div v-for="(essay, idx) in essaylst" :key="idx" class="item">
+            <router-link :to="'/browser/essay/detail/' + essay.id" class="item-header">{{ essay.title }}</router-link>
+            <p class="item-body">{{ essay.summary }}</p>
+            <div class="item-footer flex-row-container">
+              <div class="left">
+
+                <el-tag v-for="(tag, tindex) in essay.tags" :key="tindex" :color="tag.background" :style="{ color: tag.color }" :hit="true" class="tag">{{ tag.name }}</el-tag>
+                <div class="count">
+                  <span style="color: green;"><svg-icon icon-class="eye-open"/> {{ essay.view }}</span>
+                  <span style="color: pink;"><svg-icon icon-class="like"/> {{ essay.lovercount }}</span>
+                </div>
+              </div>
+              <div class="right">
+                <span class="timestamp">{{ essay.author.name }} 创作于 {{ essay.upt }}</span>
               </div>
             </div>
-            <div class="right">
-              <span class="timestamp">{{ essay.author.name }} 创作于 {{ essay.upt }}</span>
-            </div>
           </div>
-        </div>
+        </transition-group>
         <el-pagination :total="essaytotal" :page-size="essayrows" class="page" background layout="prev, pager, next" @current-change="handleEssayPageChange"/>
       </el-tab-pane>
       <el-tab-pane class="summary">
