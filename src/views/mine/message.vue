@@ -7,14 +7,14 @@
       <div class="body flex-row-container">
         <div class="list">
           <el-tabs :stretch="true" class="tabs" body type="border-card">
-            <el-tab-pane label="未读消息(20)">
-              <div class="item flex-row-container">
+            <el-tab-pane :label="`未读消息(${unreadlsttotal})`">
+              <div v-for="(unread, udx) in unreadlst" :key="udx" class="item flex-row-container" @click="handleClickTarget(unread)">
                 <div class="avator">
-                  <img src="https://i.loli.net/2019/03/16/5c8c9b1c3e372.jpg">
+                  <img :src="unread.creator.headimg">
                 </div>
                 <div class="info">
-                  <span>老刘</span>
-                  <p>@老刘 评论了你的文章</p>
+                  <span>{{ unread.creator.name }}</span>
+                  <p>{{ unread.content }}</p>
                 </div>
                 <div class="option">
                   <el-button class="button" type="danger" icon="el-icon-delete"/>
@@ -24,20 +24,36 @@
                 <span>暂无数据</span>
               </div>
             </el-tab-pane>
-            <el-tab-pane label="已读消息">已读消息</el-tab-pane>
+            <el-tab-pane label="已读消息">
+              <div v-for="(read, rdx) in readlst" :key="rdx" class="item flex-row-container">
+                <div class="avator">
+                  <img :src="read.creator.headimg">
+                </div>
+                <div class="info">
+                  <span>{{ read.creator.name }}</span>
+                  <p>{{ read.content }}</p>
+                </div>
+                <div class="option">
+                  <el-button class="button" type="danger" icon="el-icon-delete"/>
+                </div>
+              </div>
+              <div class="no-data">
+                <span>暂无数据</span>
+              </div>
+            </el-tab-pane>
           </el-tabs>
         </div>
         <div class="chat flex-column-container">
           <div class="header">
-            <span>老刘</span>
+            <span>{{ target.name }}</span>
           </div>
           <div class="body">
-            <div class="chat-item flex-row-container">
+            <div v-for="(record, cdx) in recordlst" :key="cdx" class="chat-item flex-row-container">
               <div class="name">
-                <a>老王:</a>
+                <a>{{ record.creator.name }}:</a>
               </div>
               <div class="content">
-                <p>你的这篇文章写的很好，可以交个朋友吗</p>
+                <p>{{ record.content }}</p>
               </div>
             </div>
           </div>
@@ -52,6 +68,59 @@
     </el-card>
   </div>
 </template>
+
+<script>
+import * as msg from '@/api/message'
+export default {
+  name: 'MineMessage',
+  data() {
+    return {
+      readlst: [], // 消息列表
+      rows: 15, // 每页消息数量
+      readlstcurrentpage: 1, // 当前消息页数
+      readlsttotal: 0, // 已读消息总数
+      unreadlst: [], // 消息列表
+      unreadlstcurrentpage: 1, // 当前消息页数
+      unreadlsttotal: 0, // 已读消息总数
+      target: {
+        id: undefined,
+        name: ''
+      }, // 聊天对象
+      recordlst: [], // 聊天记录列表
+      recordcurrentpage: 1, // 当前聊天记录页数
+      recordtotal: 0
+    }
+  },
+  mounted() {
+    this.getLst(0)
+    this.getLst(1)
+  },
+  methods: {
+    getLst(type) {
+      msg.lst(type).then(data => {
+        if (type === 0) {
+          this.unreadlst = Object.assign(this.unreadlst, data.lst)
+          this.unreadlsttotal = data.total
+        } else if (type === 1) {
+          this.readlst = Object.assign(this.readlst, data.lst)
+          this.readlsttotal = data.total
+        }
+      })
+    },
+    getRecord() {
+      console.log(this.target)
+      msg.lstFromTarget(this.target.id).then(data => {
+        this.recordlst = Object.assign(this.recordlst, data.lst)
+        this.recordtotal = data.total
+      })
+    },
+    handleClickTarget(target) {
+      this.target = target.creator
+      this.getRecord()
+    }
+  }
+}
+</script>
 
 <style lang="scss" scoped>
 @import '@/styles/variables.scss';

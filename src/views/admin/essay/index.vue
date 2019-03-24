@@ -59,30 +59,24 @@ export default {
         this.pageindex = index
       }
       lst(this.pageindex - 1, 10, 1).then(response => {
-        if (response.code === 0) {
-          this.tableData = response.data.lst
-          this.tablerows = response.data.total
-        }
+        this.tableData = response.lst
+        this.tablerows = response.total
       })
     },
     handleSetTop(row, index) {
       const top = row.top === 1 ? 0 : 1
       essaySetTop(row.id, top).then(response => {
-        if (response.code === 0) {
-          const temp = this.tableData
-          temp[index].top = !row.top
-          this.tableData = Object.assign({}, temp)
-        }
+        const temp = this.tableData
+        temp[index].top = !row.top
+        this.tableData = Object.assign({}, temp)
       })
     },
     handleSetHide(row, index) {
       const hide = row.hide === 1 ? 0 : 1
       essaySetHide(row.id, hide).then(response => {
-        if (response.code === 0) {
-          const temp = this.tableData
-          temp[index].hide = !row.hide
-          this.tableData = Object.assign({}, temp)
-        }
+        const temp = this.tableData
+        temp[index].hide = !row.hide
+        this.tableData = Object.assign({}, temp)
       })
     },
     handleFilterChanged() {

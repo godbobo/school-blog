@@ -12,34 +12,36 @@
         <el-button slot="append" icon="el-icon-search" @click="handleFilterChanged">搜索</el-button>
       </el-input>
     </div>
-    <el-table ref="filterTable" :data="tableData" :stripe="true" style="width: 100%">
+    <el-table ref="filterTable" :data="lst" :stripe="true" style="width: 100%">
       <el-table-column label="选择" type="selection" />
       <el-table-column prop="id" label="编号" sortable column-key="id" width="80px" />
-      <el-table-column prop="title" label="标题" />
-      <el-table-column prop="topic.name" label="标签"/>
-      <el-table-column prop="author.name" label="创建者" sortable/>
-      <el-table-column prop="view" label="文章数量" sortable width="100px"/>
+      <el-table-column prop="name" label="标题" />
+      <el-table-column :formatter="formatter" prop="tags" label="标签"/>
+      <el-table-column prop="creator.name" label="创建者" sortable/>
+      <el-table-column prop="essaycount" label="文章数量" sortable width="100px"/>
+      <el-table-column prop="usercount" label="参与数" sortable width="100px"/>
       <el-table-column prop="upt" label="创建时间" />
-      <el-table-column label="操作" prop="top">
+      <el-table-column label="操作">
         <template slot-scope="scope">
           <el-button size="mini">查看</el-button>
           <el-button size="mini" type="danger">删除</el-button>
         </template>
       </el-table-column>
     </el-table>
-    <el-pagination :total="tablerows" :current-page="pageindex" class="pagination-margin" background layout="prev, pager, next" @current-change="handleLst" />
+    <el-pagination :total="total" :page-size="rows" class="pagination-margin" background layout="prev, pager, next" @current-change="handlePageChanged" />
   </div>
 </template>
 
 <script>
-import { lst, essaySetTop, essaySetHide } from '@/api/essay'
+import * as topic from '@/api/topic'
 
 export default {
-  name: 'UserManage',
+  name: 'AdminTopicManage',
   data() {
     return {
-      tableData: [], // 表格中用户数据
-      tablerows: 0, // 查询结果总数
+      lst: [], // 表格中用户数据
+      rows: 15, // 每页显示数量
+      total: 0, // 查询结果总数
       pageindex: 1, // 当前页,分页使用该默认值作为起点，但服务器端使用0作为起点
       filtertxt: '', // 查询关键字
       filtertype: 0
@@ -48,38 +50,25 @@ export default {
   computed: {
   },
   created() {
-    this.handleLst()
+    this.getLst()
   },
   methods: {
     formatter(row, column, cellValue) {
+      let res = ''
+      row.tags.map(val => {
+        res += val.name + ','
+      })
+      return res === '' ? res : res.substr(0, res.length - 1)
     },
-    handleLst() {
-      lst(this.pageindex - 1, 20, 1).then(response => {
-        if (response.code === 0) {
-          this.tableData = response.data.lst
-          this.tablerows = response.data.total
-        }
+    getLst() {
+      topic.lst(this.pageindex - 1, this.rows).then(response => {
+        this.lst = response.lst
+        this.total = response.total
       })
     },
-    handleSetTop(row, index) {
-      const top = row.top === 1 ? 0 : 1
-      essaySetTop(row.id, top).then(response => {
-        if (response.code === 0) {
-          const temp = this.tableData
-          temp[index].top = !row.top
-          this.tableData = temp
-        }
-      })
-    },
-    handleSetHide(row, index) {
-      const hide = row.hide === 1 ? 0 : 1
-      essaySetHide(row.id, hide).then(response => {
-        if (response.code === 0) {
-          const temp = this.tableData
-          temp[index].hide = !row.hide
-          this.tableData = temp
-        }
-      })
+    handlePageChanged(val) {
+      this.pageindex = val
+      this.getLst()
     },
     handleFilterChanged() {
       console.log('点击搜索')

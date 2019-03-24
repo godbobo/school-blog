@@ -13,6 +13,45 @@ function lst(page, rows, type) {
   })
 }
 
+// 获取某个用户的文章列表
+function lstByAuthor(id, page, rows) {
+  return request({
+    url: '/essay/lstByAuthor',
+    method: 'post',
+    data: {
+      'page': page,
+      'row': rows,
+      'user.id': id
+    }
+  })
+}
+
+// 获取某个用户的收藏列表
+function lstByLover(id, page, rows) {
+  return request({
+    url: '/essay/lstByLover',
+    method: 'post',
+    data: {
+      'page': page,
+      'row': rows,
+      'user.id': id
+    }
+  })
+}
+
+// 获取某个话题下的文章列表
+function lstByTopic(id, page, rows) {
+  return request({
+    url: '/essay/lstByTopic',
+    method: 'post',
+    data: {
+      'page': page,
+      'row': rows,
+      'topic.id': id
+    }
+  })
+}
+
 // 获取指定id下文章
 function essayLstAbout(id) {
   return request({
@@ -87,4 +126,4 @@ function essayAdd(title, summary, content, tags, topic = 0) {
   })
 }
 
-export { lst, essayLstAbout, find, essayAdd, essaySetHide, essaySetTop, essaySetLike }
+export { lst, lstByAuthor, lstByTopic, lstByLover, essayLstAbout, find, essayAdd, essaySetHide, essaySetTop, essaySetLike }

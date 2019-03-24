@@ -71,16 +71,14 @@ export default {
   methods: {
     handleLst() {
       lst(this.pageindex - 1, this.rows, 0).then(response => {
-        if (response.code === 0) {
-          // 当第一页时显示置顶文章
-          if (this.pageindex === 1 && response.data.toplst) {
-            this.lst = [...response.data.toplst, ...response.data.lst]
-          } else {
-            this.lst = response.data.lst
-          }
-          this.recommandlst = response.data.recommandlst
-          this.total = response.data.total
+        // 当第一页时显示置顶文章
+        if (this.pageindex === 1 && response.toplst) {
+          this.lst = [...response.toplst, ...response.lst]
+        } else {
+          this.lst = response.lst
         }
+        this.recommandlst = response.recommandlst
+        this.total = response.total
       })
     },
     refresh() {

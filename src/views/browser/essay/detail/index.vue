@@ -101,7 +101,7 @@
       </el-col>
     </el-row>
     <div class="like flex-column-container" @click="handleLike">
-      <svg-icon :class="{ 'normal': !essay.isfav, 'primary': essay.isfav }" icon-class="real-heart"/>
+      <svg-icon :class="{ 'normal': !isfav, 'primary': isfav }" icon-class="real-heart"/>
     </div>
     <scroll-top/>
   </div>
@@ -110,7 +110,7 @@
 <script>
 import { find, essayLstAbout, essaySetLike } from '@/api/essay'
 import { userCount, userFollow } from '@/api/user'
-import { commentAdd, commentLst } from '@/api/comment'
+import * as comment from '@/api/comment'
 import 'tui-editor/dist/tui-editor-contents.css'
 import 'highlight.js/styles/github.css'
 import Viewer from '@toast-ui/vue-editor/src/Viewer.vue'
@@ -148,7 +148,8 @@ export default {
       commentlst: [], // 评论列表
       commenttotal: 0, // 评论数量
       commentrows: 6, // 每页显示评论数量
-      commentpage: 1 // 评论列表当前页
+      commentpage: 1, // 评论列表当前页
+      isfav: false
     }
   },
   computed: {
@@ -173,13 +174,12 @@ export default {
   methods: {
     handleDetail() {
       find(this.id, 0).then(response => {
-        if (response.code === 0) {
-          this.essay = response.data.essay
-          this.handleCount(this.essay.author.id)
-          // 若存在所属话题则获取相关文章
-          if (this.essay.topic) {
-            this.handleLst(this.essay.topic.id)
-          }
+        this.essay = response.essay
+        this.isfav = response.isfav
+        this.handleCount(this.essay.author.id)
+        // 若存在所属话题则获取相关文章
+        if (this.essay.topic) {
+          this.handleLst(this.essay.topic.id)
         }
       }).catch(() => {
         // 文章获取失败则重定向到404页面
@@ -188,32 +188,26 @@ export default {
     },
     handleLst(id) {
       essayLstAbout(id).then(response => {
-        if (response.code === 0) {
-          this.aboutlst = response.data.aboutlst
-        }
+        this.aboutlst = response.aboutlst
       })
     },
     handleCount(id) {
       userCount(id).then(response => {
-        if (response.code === 0) {
-          this.count = response.data
-        }
+        this.count = response
       })
     },
     handleFollow() {
       const type = this.count.isfollow ? 1 : 0
       userFollow(this.essay.author.id, type).then(response => {
-        if (response.code === 0) {
-          this.count.isfollow = !this.count.isfollow
-          this.$message({
-            message: '操作成功',
-            type: 'success'
-          })
-        }
+        this.count.isfollow = !this.count.isfollow
+        this.$message({
+          message: '操作成功',
+          type: 'success'
+        })
       })
     },
     handleCommentAdd() {
-      commentAdd(this.commentcontent, 0, this.id).then(response => {
+      comment.add(this.commentcontent, 0, this.id).then(response => {
         this.commentcontent = ''
         this.$message({
           message: '评论成功',
@@ -223,24 +217,19 @@ export default {
       })
     },
     handleCommentLst() {
-      commentLst(this.commentpage - 1, this.commentrows, 0, this.id).then(response => {
-        if (response.code === 0) {
-          this.commentlst = response.data.commentlst
-          this.commenttotal = response.data.total
-        }
+      comment.lst(this.commentpage - 1, this.commentrows, 0, this.id).then(response => {
+        this.commentlst = response.commentlst
+        this.commenttotal = response.total
       })
     },
     handleLike() {
       essaySetLike(this.id).then(response => {
-        if (response.code === 0) {
-          const temp = this.essay
-          temp.isfav = !temp.isfav
-          this.essay = Object.assign({}, temp)
-          this.$message({
-            message: '操作成功',
-            type: 'success'
-          })
-        }
+        this.isfav = !this.isfav
+        const msg = this.isfav ? '收藏成功' : '取消收藏成功'
+        this.$message({
+          message: msg,
+          type: 'success'
+        })
       })
     },
     onPageChanged(val) {

@@ -1,14 +1,14 @@
 import { login, logout, getInfo } from '@/api/login'
 import { getUserLst, addUser } from '@/api/user'
 import { getToken, setToken, removeToken } from '@/utils/auth'
-import { Message } from 'element-ui'
 
 const user = {
   state: {
     token: getToken(),
     name: '',
     avatar: '',
-    role: -1
+    role: -1,
+    username: 0
   },
 
   // 名称仅仅用了大写，并不是设置了全局变量
@@ -25,6 +25,9 @@ const user = {
     },
     SET_ROLES: (state, roles) => {
       state.role = roles
+    },
+    SET_USERNAME: (state, id) => {
+      state.username = id
     }
   },
 
@@ -33,18 +36,17 @@ const user = {
     Login({ commit }, userInfo) {
       const username = userInfo.username.trim()
       return new Promise((resolve, reject) => {
-        login(username, userInfo.password).then(response => {
-          const data = response.data
+        login(username, userInfo.password).then(data => {
           setToken(data.token)
           commit('SET_TOKEN', data.token)
           if (data.user && data.user.role > -1) { // 验证返回的用户的合法性
             commit('SET_ROLES', data.user.role) // 获取到数据之后就可以将其存储到 store 了
             commit('SET_NAME', data.user.name)
             commit('SET_AVATAR', data.user.headimg)
+            commit('SET_USERNAME', data.user.id)
           } else {
             reject('非法用户角色!') // 向外抛出错误信息
           }
-          // commit('SET_AVATAR', data.avatar)
           resolve()
         }).catch(error => {
           reject(error)
@@ -54,18 +56,19 @@ const user = {
 
     // 获取用户信息
     GetInfo({ commit, state }) {
+      if (!state.token) {
+        return
+      }
       return new Promise((resolve, reject) => {
-        console.log('info')
         getInfo(state.token).then(response => {
-          const data = response.data
-          if (data.user && data.user.role > -1) { // 验证返回的用户的合法性
-            commit('SET_ROLES', data.user.role) // 获取到数据之后就可以将其存储到 store 了
-            commit('SET_NAME', data.user.name)
-            commit('SET_AVATAR', data.user.headimg)
+          if (response.user && response.user.role > -1) { // 验证返回的用户的合法性
+            commit('SET_ROLES', response.user.role) // 获取到数据之后就可以将其存储到 store 了
+            commit('SET_NAME', response.user.name)
+            commit('SET_AVATAR', response.user.headimg)
+            commit('SET_USERNAME', response.user.id)
           } else {
             reject('非法用户角色!') // 向外抛出错误信息
           }
-          // commit('SET_AVATAR', data.avatar)
           resolve(response)
         }).catch(error => {
           reject(error) // 向外抛出错误信息
@@ -98,15 +101,7 @@ const user = {
     },
 
     // 获取用户列表（仅管理员有该权限）
-    UserGetLst({ state }, payload) {
-      if (state.role !== 2) {
-        Message({
-          message: '非管理员用户禁止此操作！',
-          type: 'error',
-          duration: 5 * 1000
-        })
-        return
-      }
+    UserGetLst(payload) {
       return new Promise((resolve, reject) => {
         getUserLst(payload.size, payload.currentpage, payload.type, payload.arg1).then(response => {
           resolve(response)

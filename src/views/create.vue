@@ -42,7 +42,7 @@ import 'codemirror/lib/codemirror.css'
 import editorOptions from '@/common/editorOptions'
 import { essayAdd } from '@/api/essay'
 import { tagLstByUser } from '@/api/tag'
-import { topicAdd, topicLstAbout } from '@/api/topic'
+import * as topic from '@/api/topic'
 // TODO 添加重置按钮
 import { Editor } from '@toast-ui/vue-editor'
 export default {
@@ -108,23 +108,19 @@ export default {
           if (this.savetype === 1) { // 保存文章
             const topicid = this.uform.addtopic ? this.uform.topic : 0
             essayAdd(this.uform.title, this.uform.summary, this.uform.content, this.uform.tags, topicid).then(response => {
-              if (response.code === 0) {
-                this.$message({
-                  message: '添加成功',
-                  type: 'success'
-                })
-                this.dialogVisible = false
-              }
+              this.$message({
+                message: '添加成功',
+                type: 'success'
+              })
+              this.dialogVisible = false
             })
           } else { // 保存话题
-            topicAdd(this.uform.title, this.uform.tags, this.uform.content).then(response => {
-              if (response.code === 0) {
-                this.$message({
-                  message: '添加成功',
-                  type: 'success'
-                })
-                this.dialogVisible = false
-              }
+            topic.add(this.uform.title, this.uform.tags, this.uform.content).then(response => {
+              this.$message({
+                message: '添加成功',
+                type: 'success'
+              })
+              this.dialogVisible = false
             })
           }
         }
@@ -132,16 +128,12 @@ export default {
     },
     handleTagLst() {
       tagLstByUser().then(response => {
-        if (response.code === 0) {
-          this.mytags = response.data.lst
-        }
+        this.mytags = response.lst
       })
     },
     handleTopicLst() {
-      topicLstAbout().then(response => {
-        if (response.code === 0) {
-          this.topicoptions = response.data.lst
-        }
+      topic.lstAbout().then(response => {
+        this.topicoptions = response.lst
       })
     }
   }

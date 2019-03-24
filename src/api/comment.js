@@ -1,6 +1,6 @@
 import request from '@/utils/request'
 
-function commentAdd(content, type, id) {
+function add(content, type, id) {
   const pms = {
     'comment.content': content,
     'comment.type': type
@@ -18,7 +18,7 @@ function commentAdd(content, type, id) {
   })
 }
 
-function commentLst(page, rows, type, id) {
+function lst(page, rows, type, id) {
   const pms = {
     queryType: type,
     page: page,
@@ -37,4 +37,4 @@ function commentLst(page, rows, type, id) {
   })
 }
 
-export { commentAdd, commentLst }
+export { add, lst }

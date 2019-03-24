@@ -135,8 +135,8 @@ export default {
       }
       // 得出查询类型
       this.$store.dispatch('UserGetLst', { currentpage: index - 1, size: 10, type: this.filtertype, arg1: this.filtertxt }).then(response => {
-        this.tableData = response.data.lst
-        this.tablerows = response.data.total
+        this.tableData = response.lst
+        this.tablerows = response.total
       })
     },
     handleAddUser() {
@@ -147,9 +147,8 @@ export default {
             this.adduserbtnloading = false
             this.addUserDialogVisible = false
             // 若增加用户成功则刷新列表
-            if (response.code === 0) {
-              this.handleUserList()
-            }
+
+            this.handleUserList()
           }).catch(() => {
             this.adduserbtnloading = false
           })

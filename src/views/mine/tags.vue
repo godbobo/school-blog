@@ -86,15 +86,13 @@ export default {
       // 验证表单内容，通过后继续
       this.$refs.form.validate((valid) => {
         if (valid) {
-          tagAdd(this.newtagform.name, this.newtagform.color, this.newtagform.background).then(response => {
-            if (response.code === 0) {
-              // 创建成功后刷新列表
-              this.handleTagLst()
-              this.$message({
-                message: '创建成功',
-                type: 'success'
-              })
-            }
+          tagAdd(this.newtagform.name, this.newtagform.color, this.newtagform.background).then(() => {
+            // 创建成功后刷新列表
+            this.handleTagLst()
+            this.$message({
+              message: '创建成功',
+              type: 'success'
+            })
           }).catch(() => {
             this.$message({
               message: '创建失败',
@@ -111,22 +109,18 @@ export default {
     },
     handleDeleteTag(tag) {
       // 确定删除
-      tagDelete(tag.id).then(response => {
-        if (response.code === 0) {
-          // 从标签列表中删除该标签
-          this.tags.splice(this.tags.indexOf(tag), 1)
-          this.$message({
-            message: '删除成功',
-            type: 'success'
-          })
-        }
+      tagDelete(tag.id).then(() => {
+        // 从标签列表中删除该标签
+        this.tags.splice(this.tags.indexOf(tag), 1)
+        this.$message({
+          message: '删除成功',
+          type: 'success'
+        })
       })
     },
     handleTagLst() {
-      tagLstByUser().then(response => {
-        if (response.code === 0) {
-          this.tags = response.data.lst
-        }
+      tagLstByUser().then(data => {
+        this.tags = data.lst
       })
     }
   }

@@ -5,28 +5,26 @@
         <el-card>
           <div slot="header" class="part-header flex-row-container">
             <h4 class="el-icon-document"> 话题列表</h4>
-            <el-button type="text" class="header-button" icon="el-icon-refresh">刷新</el-button>
+            <el-button type="text" class="header-button" icon="el-icon-refresh" @click="handleRefresh">刷新</el-button>
           </div>
           <div class="part-body">
-            <div v-for="o in 4" :key="o" class="item">
-              <router-link to="/browser/topic/detail/23" class="item-header">十大经典算法总结 - 做个隐士 - 博客园</router-link>
-              <p class="item-body">十大经典算法总结十大经典算法总结十大经典算法总结十大经典算法总结十大经典算法总结十大经典算法总结十大经典算法总结十大经典算法总结十大经典算法总结十大经典算法总结十大经典算法总结十大经典算法总结十大经典算法总结</p>
+            <div v-for="(titem, tindex) in lst" :key="tindex" class="item">
+              <router-link :to="'/browser/topic/detail/' + titem.id" class="item-header">{{ titem.name }}</router-link>
+              <p class="item-body">{{ titem.summary }}</p>
               <div class="item-footer flex-row-container">
                 <div class="left">
-                  <el-tag type="info">标签三</el-tag>
-                  <el-tag type="info">标签三</el-tag>
-                  <el-tag type="info">标签三</el-tag>
+                  <el-tag v-for="(tag, tidx) in titem.tags" :key="tidx" :color="tag.background" :style="{ color: tag.color }" :hit="true" class="tag">{{ tag.name }}</el-tag>
                   <div class="count">
-                    <span style="color: #409EFF;"><svg-icon icon-class="user"/> 12</span>
-                    <span style="color: #67C23A;" class="el-icon-document"> 52</span>
+                    <span style="color: #409EFF;"><svg-icon icon-class="user"/> {{ titem.usercount }}</span>
+                    <span style="color: #67C23A;" class="el-icon-document"> {{ titem.essaycount }}</span>
                   </div>
                 </div>
                 <div class="right">
-                  <span class="timestamp">老王 创建于 2019-03-16</span>
+                  <span class="timestamp">{{ titem.creator.name }} 创建于 {{ titem.upt }}</span>
                 </div>
               </div>
             </div>
-            <el-pagination :total="1000" class="page" background layout="prev, pager, next"/>
+            <el-pagination :total="total" :page-size="row" class="page" background layout="prev, pager, next" @current-change="handlePageChange"/>
           </div>
         </el-card>
       </el-col>
@@ -36,8 +34,8 @@
             <h4><svg-icon icon-class="recommand"/> 推荐列表</h4>
           </div>
           <div class="part-body">
-            <div v-for="o in 4" :key="o" class="item">
-              <a class="item-header"><span style="color: red;"><svg-icon icon-class="topic"/></span> 十大经典算法总结 - 做个隐士 - 博客园</a>
+            <div v-for="(about, idx) in aboutlst" :key="idx" class="item">
+              <router-link :to="'/browser/topic/detail/' + about.id" class="item-header"><span style="color: red;"><svg-icon icon-class="topic"/></span> {{ about.name }}</router-link>
             </div>
           </div>
         </el-card>
@@ -45,6 +43,47 @@
     </el-row>
   </div>
 </template>
+
+<script>
+import * as topic from '@/api/topic'
+export default {
+  name: 'BrowserTopicLst',
+  data() {
+    return {
+      lst: [], // 话题列表
+      row: 15, // 每页数量
+      currentpage: 1, // 当前页数
+      total: 0, // 话题总数
+      aboutlst: []
+    }
+  },
+  created() {
+    this.getLst()
+    this.getAboutLst()
+  },
+  methods: {
+    getLst() {
+      topic.lst(this.currentpage - 1, this.row).then(data => {
+        this.lst = data.lst
+        this.total = data.total
+      })
+    },
+    getAboutLst() {
+      topic.lstAbout().then(data => {
+        this.aboutlst = data.lst
+      })
+    },
+    handlePageChange(val) {
+      this.currentpage = val
+      this.getLst()
+    },
+    handleRefresh() {
+      this.currentpage = 1
+      this.getLst()
+    }
+  }
+}
+</script>
 
 <style lang="scss" scoped>
 @import '@/styles/variables.scss';
