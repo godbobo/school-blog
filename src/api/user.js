@@ -52,4 +52,12 @@ function userFollow(id, type) {
   })
 }
 
-export { getUserLst, addUser, userCount, userFollow }
+// 获取用户信息
+function get() {
+  return request({
+    url: '/user/getInfo',
+    method: 'post'
+  })
+}
+
+export { getUserLst, addUser, userCount, userFollow, get }

@@ -102,18 +102,18 @@ export const constantRouterMap = [
     ]
   },
 
-  {
-    path: '/settings',
-    component: Layout,
-    children: [
-      {
-        path: '',
-        name: 'Settings',
-        component: () => import('@/views/settings'),
-        meta: { title: '设置', icon: 'setting' }
-      }
-    ]
-  },
+  // {
+  //   path: '/settings',
+  //   component: Layout,
+  //   children: [
+  //     {
+  //       path: '',
+  //       name: 'Settings',
+  //       component: () => import('@/views/settings'),
+  //       meta: { title: '设置', icon: 'setting' }
+  //     }
+  //   ]
+  // },
 
   {
     path: '/create',
@@ -135,12 +135,12 @@ export const constantRouterMap = [
     meta: { title: '管理', icon: 'tree' },
     name: 'Admin',
     children: [
-      {
-        path: 'system',
-        name: 'ManageSystem',
-        component: () => import('@/views/admin/system'),
-        meta: { title: '系统管理', icon: 'system' }
-      },
+      // {
+      //   path: 'system',
+      //   name: 'ManageSystem',
+      //   component: () => import('@/views/admin/system'),
+      //   meta: { title: '系统管理', icon: 'system' }
+      // },
       {
         path: 'user',
         name: 'ManageUser',
