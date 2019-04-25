@@ -1,4 +1,5 @@
 import request from '@/utils/request'
+// import fileRequest from '@/utils/fileRequest'
 import * as qtp from '@/common/var'
 
 // 获取用户列表, 某些参数为可选条件，row 和 page 有默认值
@@ -26,6 +27,20 @@ function addUser(...values) {
     data: {
       queryList: values
     }
+  })
+}
+
+// 批量添加用户
+function batchAddUser(file) {
+  const params = new FormData()
+  params.append('excel', file)
+  return request({
+    url: '/user/excelUpload',
+    method: 'post',
+    headers: {
+      'Content-Type': 'multipart/form-data'
+    },
+    data: params
   })
 }
 
@@ -60,4 +75,4 @@ function get() {
   })
 }
 
-export { getUserLst, addUser, userCount, userFollow, get }
+export { getUserLst, addUser, userCount, userFollow, get, batchAddUser }

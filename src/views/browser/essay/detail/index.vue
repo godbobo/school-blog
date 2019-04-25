@@ -31,7 +31,8 @@
             <h2>评论列表</h2>
             <hr>
             <div class="list">
-              <transition-group name="list">
+              <comment :comments="commentlst" @commit-comment="handleSubCommentAdd" />
+              <!-- <transition-group name="list">
                 <div v-for="(commentitem, cindex) in commentlst" :key="cindex" class="item flex-row-container">
                   <div class="user-info flex-row-container">
                     <img :src="commentitem.creator.headimg">
@@ -46,7 +47,7 @@
                     </div>
                   </div>
                 </div>
-              </transition-group>
+              </transition-group> -->
             </div>
             <el-pagination :total="commenttotal" :current-page="commentpage" :page-size="commentrows" class="page" background layout="prev, pager, next" @current-change="onPageChanged"/>
           </div>
@@ -119,10 +120,11 @@ import 'tui-editor/dist/tui-editor-contents.css'
 import 'highlight.js/styles/github.css'
 import Viewer from '@toast-ui/vue-editor/src/Viewer.vue'
 import ScrollTop from '@/components/ScrollTop/index.vue'
+import Comment from '@/components/Comment/index.vue'
 
 export default {
   name: 'EssayDetail',
-  components: { Viewer, ScrollTop },
+  components: { Viewer, ScrollTop, Comment },
   props: {
     id: {
       type: String,
@@ -217,6 +219,16 @@ export default {
     handleCommentAdd() {
       comment.add(this.commentcontent, 0, this.id).then(response => {
         this.commentcontent = ''
+        this.$message({
+          message: '评论成功',
+          type: 'success'
+        })
+        this.handleCommentLst()
+      })
+    },
+    handleSubCommentAdd(content, commentid, creatorid) {
+      console.log(content, commentid, creatorid)
+      comment.addSubComment(content, commentid, creatorid).then(response => {
         this.$message({
           message: '评论成功',
           type: 'success'

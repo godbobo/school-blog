@@ -8,13 +8,22 @@ import qs from 'qs'
 const service = axios.create({
   baseURL: process.env.BASE_API, // api 的 base_url
   timeout: 15000, // 请求超时时间
-  transformRequest: [data => qs.stringify(data)]
+  headers: {
+    'Content-Type': 'application/x-www-form-urlencoded'
+  },
+  transformRequest: [(data, config) => {
+    if (data instanceof FormData) { // 如果数据是FormData类型的，就更改默认请求头
+      return data
+    } else {
+      // 默认请求头为form-urlencoded
+      return qs.stringify(data)
+    }
+  }]
 })
 
 // request拦截器
 service.interceptors.request.use(
   config => {
-    config.headers['Content-Type'] = 'application/x-www-form-urlencoded'
     // 如果存储的有 token 则添加到 header 中
     if (store.getters.token) {
       config.headers['Authorization'] = getToken() // 让每个请求携带自定义token 请根据实际情况自行修改

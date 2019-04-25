@@ -54,7 +54,8 @@
           <h2>评论列表</h2>
           <hr>
           <div class="list">
-            <div v-for="(comment, cdx) in commentlst" :key="cdx" class="item flex-row-container">
+            <comment :comments="commentlst" @commit-comment="handleSubCommentAdd" />
+            <!-- <div v-for="(comment, cdx) in commentlst" :key="cdx" class="item flex-row-container">
               <div class="user-info flex-row-container">
                 <img :src="comment.creator.headimg">
                 <div class="name-wrap flex-column-container">
@@ -63,7 +64,7 @@
                 </div>
               </div>
               <div class="content">{{ comment.content }}</div>
-            </div>
+            </div> -->
           </div>
         </div>
       </el-tab-pane>
@@ -84,9 +85,10 @@ import * as comment from '@/api/comment'
 import 'tui-editor/dist/tui-editor-contents.css'
 import 'highlight.js/styles/github.css'
 import Viewer from '@toast-ui/vue-editor/src/Viewer.vue'
+import Comment from '@/components/Comment/index.vue'
 export default {
   name: 'BrowserTopicDetail',
-  components: { Viewer },
+  components: { Viewer, Comment },
   props: {
     id: {
       type: String,
@@ -134,6 +136,15 @@ export default {
     sendComment() {
       comment.add(this.commentcontent, 1, this.id).then(() => {
         this.commentcontent = ''
+        this.getCommentLst()
+      })
+    },
+    handleSubCommentAdd(content, commentid, creatorid) {
+      comment.addSubComment(content, commentid, creatorid).then(response => {
+        this.$message({
+          message: '评论成功',
+          type: 'success'
+        })
         this.getCommentLst()
       })
     },

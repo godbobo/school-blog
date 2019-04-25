@@ -45,7 +45,16 @@
         </el-table>
         <el-pagination :total="tablerows" :page-size="rows" :current-page="pageindex" class="pagination-margin" background layout="prev, pager, next" @current-change="handlePageChanged"/>
       </el-tab-pane>
-      <el-tab-pane label="批量增加" name="add">配置管理</el-tab-pane>
+      <el-tab-pane label="批量增加" name="add">
+        <el-alert style="margin-bottom:10px;" title="您上传的Excel文件必须在表头包含role;name;loginname字段，表头信息必须正确才可以识别，详细信息可下载示例文档：" type="warning" show-icon><a class="alert-link" href="http://localhost/upload/example/mock01.xlsx">示例文档</a></el-alert>
+        <upload-excel-component ref="uploadfile" :on-success="handleSuccess"/>
+        <div class="upload-wrap">
+          <el-button type="primary" icon="el-icon-upload" @click="uploadExcel">确定上传</el-button>
+        </div>
+        <el-table :data="uploadtabledata" border highlight-current-row style="width: 100%;margin-top:20px;">
+          <el-table-column v-for="item of uploadtableheader" :prop="item" :label="item" :key="item"/>
+        </el-table>
+      </el-tab-pane>
     </el-tabs>
     <el-dialog :visible.sync="addUserDialogVisible" :close-on-click-modal="true" title="添加用户" width="40%">
       <el-form ref="adduserform" :model="userform" :rules="rulesuserform">
@@ -73,8 +82,11 @@
 </template>
 
 <script>
+import UploadExcelComponent from '@/components/UploadExcel/index.vue'
+import * as user from '@/api/user'
 export default {
   name: 'UserManage',
+  components: { UploadExcelComponent },
   data() {
     return {
       activeName: 'lst', // 当前 tab 页面
@@ -107,7 +119,9 @@ export default {
       }, // 表单验证格式
       adduserbtnloading: false, // 添加用户按钮的加载状态
       filtertxt: '', // 查询关键字
-      filtertype: 0
+      filtertype: 0,
+      uploadtabledata: [],
+      uploadtableheader: []
     }
   },
   computed: {
@@ -162,6 +176,33 @@ export default {
     handlePageChanged(val) {
       this.pageindex = val
       this.handleUserList()
+    },
+    handleSuccess({ results, header }) {
+      this.uploadtabledata = results
+      this.uploadtableheader = header
+    },
+    uploadExcel() {
+      if (this.uploadtableheader && this.uploadtableheader.length > 0 && this.uploadtabledata && this.uploadtabledata.length > 0) {
+        const ml = ['loginname', 'name', 'role']
+        // 判断表头是否包含指定字段
+        let p = true
+        ml.every((val) => {
+          if (this.uploadtableheader.indexOf(val) < 0) {
+            p = false
+            this.$message({
+              message: '未找到必填字段，请修改后重试',
+              type: 'error'
+            })
+            return false
+          }
+        })
+        if (p) {
+          const f = this.$refs['uploadfile'].$refs['excel-upload-input'].files[0]
+          user.batchAddUser(f).then(response => {
+            console.log(response)
+          })
+        }
+      }
     }
   }
 }
@@ -173,5 +214,15 @@ export default {
   .select-type {
     width: 120px;
   }
+}
+
+.upload-wrap {
+  width: 100%;
+  text-align: center;
+  margin-top: 10px;
+}
+
+.alert-link {
+  text-decoration: underline;
 }
 </style>

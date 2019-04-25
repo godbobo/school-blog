@@ -18,6 +18,19 @@ function add(content, type, id) {
   })
 }
 
+// 添加子评论
+function addSubComment(content, commentid, creatorid) {
+  return request({
+    url: '/comment/addSubComment',
+    method: 'post',
+    data: {
+      'comment.content': content,
+      'comment.creator.id': creatorid,
+      'comment.id': commentid
+    }
+  })
+}
+
 function lst(page, rows, type, id) {
   const pms = {
     queryType: type,
@@ -37,4 +50,4 @@ function lst(page, rows, type, id) {
   })
 }
 
-export { add, lst }
+export { add, lst, addSubComment }
