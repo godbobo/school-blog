@@ -72,7 +72,20 @@
         <span slot="label">
           <svg-icon icon-class="file"/>文件
         </span>
-        定时任务补偿
+        <div class="file-body">
+          <el-upload
+            :before-remove="handleFileRemove"
+            :before-upload="beforeUpload"
+            :on-preview="downloadFile"
+            :file-list="filelst"
+            :multiple="false"
+            :action="uploadapi"
+            :headers="header"
+            :data="uploadfileparam"
+            class="upload-demo">
+            <el-button size="small" type="primary">点击上传</el-button>
+          </el-upload>
+        </div>
       </el-tab-pane>
     </el-tabs>
   </div>
@@ -82,6 +95,7 @@
 import * as topic from '@/api/topic'
 import * as essay from '@/api/essay'
 import * as comment from '@/api/comment'
+import * as resource from '@/api/file'
 import 'tui-editor/dist/tui-editor-contents.css'
 import 'highlight.js/styles/github.css'
 import Viewer from '@toast-ui/vue-editor/src/Viewer.vue'
@@ -105,6 +119,15 @@ export default {
         upt: '',
         summary: ''
       }, // 文章基本信息
+      uploadapi: process.env.BASE_API + 'file/upload',
+      header: {
+        'Authorization': this.$store.getters.token
+      },
+      filelst: [], // 文件列表
+      uploadfileparam: {
+        queryType: 1,
+        id: this.id
+      }, // 上传文件时附加的参数
       essaylst: [], // 文章列表
       essaycurrentpage: 1, // 当前文章页数
       essayrows: 15, // 每页显示文章数量
@@ -125,6 +148,7 @@ export default {
         this.getEssayLst()
         this.getCommentLst()
         this.topic = data.topic
+        this.filelst = data.topic.files
       })
     },
     getEssayLst() {
@@ -153,6 +177,24 @@ export default {
         this.commentlst = data.commentlst
         this.commenttotal = data.total
       })
+    },
+    handleFileRemove(file, fileList) {
+      if (this.$store.getters.username !== this.topic.creator.id) {
+        this.$message({
+          message: '仅作者可以管理文件',
+          type: 'error'
+        })
+        return false
+      }
+      return resource.remove(this.id, 1, file.id)
+    },
+    downloadFile(file) {
+      window.open(file.url, '_blank')
+    },
+    beforeUpload(file) {
+      if (this.$store.getters.username !== this.topic.creator.id) {
+        return false
+      }
     },
     handleEssayPageChange(val) {
       this.essaycurrentpage = val

@@ -32,22 +32,6 @@
             <hr>
             <div class="list">
               <comment :comments="commentlst" @commit-comment="handleSubCommentAdd" />
-              <!-- <transition-group name="list">
-                <div v-for="(commentitem, cindex) in commentlst" :key="cindex" class="item flex-row-container">
-                  <div class="user-info flex-row-container">
-                    <img :src="commentitem.creator.headimg">
-                    <div class="name-wrap">
-                      <span class="name">{{ commentitem.creator.name }}：</span>
-                    </div>
-                  </div>
-                  <div class="content">
-                    <p>{{ commentitem.content }}</p>
-                    <div class="bottom">
-                      <span class="time">{{ commentitem.upt }}</span>
-                    </div>
-                  </div>
-                </div>
-              </transition-group> -->
             </div>
             <el-pagination :total="commenttotal" :current-page="commentpage" :page-size="commentrows" class="page" background layout="prev, pager, next" @current-change="onPageChanged"/>
           </div>
@@ -88,6 +72,25 @@
             </div>
           </div>
         </el-card>
+        <el-card class="file-card">
+          <div slot="header" class="header">
+            <h3><svg-icon icon-class="resource"/> 资源下载</h3>
+          </div>
+          <div class="body">
+            <el-upload
+              :before-remove="handleFileRemove"
+              :before-upload="beforeUpload"
+              :on-preview="downloadFile"
+              :file-list="filelst"
+              :multiple="false"
+              :action="uploadapi"
+              :headers="header"
+              :data="uploadfileparam"
+              class="upload-demo">
+              <el-button size="small" type="primary">点击上传</el-button>
+            </el-upload>
+          </div>
+        </el-card>
         <el-card v-if="aboutlst.length > 0" class="about-card">
           <div slot="header" class="header">
             <h3><svg-icon icon-class="recommand"/> 相关推荐</h3>
@@ -96,13 +99,6 @@
             <router-link v-for="(aboutitem, aindex) in aboutlst" :key="aindex" :to="'/browser/essay/detail/' + aboutitem.id">{{ aboutitem.title }}</router-link>
           </div>
         </el-card>
-        <!-- tui-editor 暂时没有找到显示目录的方法
-        <el-card class="directory-card">
-          <div slot="header" class="header">
-            <h3><svg-icon icon-class="directory"/> 目录</h3>
-          </div>
-        </el-card>
-        -->
       </el-col>
     </el-row>
     <div class="like flex-column-container" @click="handleLike">
@@ -116,6 +112,7 @@
 import { find, essayLstAbout, essaySetLike } from '@/api/essay'
 import { userCount, userFollow } from '@/api/user'
 import * as comment from '@/api/comment'
+import * as resource from '@/api/file'
 import 'tui-editor/dist/tui-editor-contents.css'
 import 'highlight.js/styles/github.css'
 import Viewer from '@toast-ui/vue-editor/src/Viewer.vue'
@@ -142,6 +139,15 @@ export default {
         }
       },
       aboutlst: [],
+      uploadapi: process.env.BASE_API + 'file/upload',
+      header: {
+        'Authorization': this.$store.getters.token
+      },
+      filelst: [], // 文件列表
+      uploadfileparam: {
+        queryType: 0,
+        id: this.id
+      }, // 上传文件时附加的参数
       count: {
         wzcount: 0, // 文章数量
         htcount: 0, // 话题数量
@@ -185,6 +191,7 @@ export default {
         this.isloading = false
         this.essay = response.essay
         this.isfav = response.isfav
+        this.filelst = response.essay.files
         this.handleCount(this.essay.author.id)
         // 若存在所属话题则获取相关文章
         if (this.essay.topic) {
@@ -241,6 +248,24 @@ export default {
         this.commentlst = response.commentlst
         this.commenttotal = response.total
       })
+    },
+    handleFileRemove(file, fileList) {
+      if (this.$store.getters.username !== this.essay.author.id) {
+        this.$message({
+          message: '仅作者可以管理文件',
+          type: 'error'
+        })
+        return false
+      }
+      return resource.remove(this.id, 0, file.id)
+    },
+    downloadFile(file) {
+      window.open(file.url, '_blank')
+    },
+    beforeUpload(file) {
+      if (this.$store.getters.username !== this.essay.author.id) {
+        return false
+      }
     },
     handleLike() {
       essaySetLike(this.id).then(response => {
@@ -364,6 +389,24 @@ export default {
       .count {
         margin-top: 6px;
       }
+    }
+  }
+}
+
+.file-card {
+  margin-top: 15px;
+  .header {
+    h3 {
+      margin: 0;
+    }
+  }
+  .body {
+    a {
+      &:hover {
+        color: red;
+      }
+      display: block;
+      margin: 5px;
     }
   }
 }
