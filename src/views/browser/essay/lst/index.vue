@@ -14,11 +14,11 @@
                 <p class="item-body">{{ item.summary }}</p>
                 <div class="item-footer flex-row-container">
                   <div class="left">
-                    <el-tag v-for="(tag, tindex) in item.tags" :key="tindex" :color="tag.background" :style="{ color: tag.color }" :hit="true" class="tag">{{ tag.name }}</el-tag>
                     <div class="count">
                       <span style="color: green;"><svg-icon icon-class="eye-open"/> {{ item.view }}</span>
                       <span style="color: pink;"><svg-icon icon-class="like"/> {{ lovercount(index) }} </span>
                     </div>
+                    <el-tag v-for="(tag, tindex) in item.tags" :key="tindex" :color="tag.background" :style="{ color: tag.color }" :hit="true" class="tag">{{ tag.name }}</el-tag>
                   </div>
                   <div class="right">
                     <span class="timestamp">{{ item.author.name }} 创作于 {{ item.upt }}</span>

@@ -12,7 +12,7 @@
             </div>
           </div>
           <transition name="fade">
-            <viewer v-loading="isloading" v-if="essay.content.length > 0" :value="essay.content"/>
+            <viewer v-openlink v-loading="isloading" v-if="essay.content.length > 0" :value="essay.content"/>
           </transition>
         </el-card>
         <el-card class="comment-card">
@@ -230,12 +230,12 @@ export default {
           message: '评论成功',
           type: 'success'
         })
+        this.commentpage = 1
         this.handleCommentLst()
       })
     },
     handleSubCommentAdd(content, commentid, creatorid) {
-      console.log(content, commentid, creatorid)
-      comment.addSubComment(content, commentid, creatorid).then(response => {
+      comment.addSubComment(content, commentid, creatorid, 0, this.id).then(response => {
         this.$message({
           message: '评论成功',
           type: 'success'

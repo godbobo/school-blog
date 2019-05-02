@@ -1,7 +1,10 @@
 <template>
   <div class="index-container">
     <div class="title">
-      <h1>{{ topic.name }}</h1>
+      <h1 style="display: inline-block;">{{ topic.name }}</h1>
+      <el-tooltip v-if="!topic.isfollow" class="item" effect="dark" content="加入话题后可以在该话题下发表文章，与同学们进行更深入的讨论" placement="right">
+        <el-button type="text" @click="followTopic">加入该话题</el-button>
+      </el-tooltip>
       <div class="info">
         <span>{{ topic.creator.name }} 创建于 {{ topic.upt }}</span>
       </div>
@@ -36,7 +39,7 @@
         <span slot="label">
           <svg-icon icon-class="summary"/>话题介绍
         </span>
-        <viewer :value="topic.summary" />
+        <viewer v-openlink :value="topic.summary" />
       </el-tab-pane>
       <el-tab-pane class="comment">
         <span slot="label">
@@ -55,16 +58,6 @@
           <hr>
           <div class="list">
             <comment :comments="commentlst" @commit-comment="handleSubCommentAdd" />
-            <!-- <div v-for="(comment, cdx) in commentlst" :key="cdx" class="item flex-row-container">
-              <div class="user-info flex-row-container">
-                <img :src="comment.creator.headimg">
-                <div class="name-wrap flex-column-container">
-                  <span class="name">{{ comment.creator.name }}：</span>
-                  <span class="time">{{ comment.upt }}</span>
-                </div>
-              </div>
-              <div class="content">{{ comment.content }}</div>
-            </div> -->
           </div>
         </div>
       </el-tab-pane>
@@ -117,7 +110,8 @@ export default {
           name: ''
         },
         upt: '',
-        summary: ''
+        summary: '',
+        isfollow: false
       }, // 文章基本信息
       uploadapi: process.env.BASE_API + 'file/upload',
       header: {
@@ -157,14 +151,24 @@ export default {
         this.essaytotal = data.total
       })
     },
+    followTopic() {
+      topic.follow(this.id).then(data => {
+        this.topic.isfollow = true
+        this.$message({
+          message: '加入成功',
+          type: 'success'
+        })
+      })
+    },
     sendComment() {
       comment.add(this.commentcontent, 1, this.id).then(() => {
         this.commentcontent = ''
+        this.commentcurrentpage = 1
         this.getCommentLst()
       })
     },
     handleSubCommentAdd(content, commentid, creatorid) {
-      comment.addSubComment(content, commentid, creatorid).then(response => {
+      comment.addSubComment(content, commentid, creatorid, 1, this.id).then(response => {
         this.$message({
           message: '评论成功',
           type: 'success'
@@ -230,6 +234,9 @@ export default {
         font-size: 18px;
         font-weight: bold;
         padding-top: 15px;
+        &:hover {
+        color: red;
+      }
       }
       .item-body {
         color: $secondaryTxt;

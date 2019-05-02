@@ -68,4 +68,15 @@ function lst(page, rows) {
   })
 }
 
-export { add, lstAbout, lstByFollower, lstByCreator, lst, find }
+// 加入话题
+function follow(id) {
+  return request({
+    url: '/topic/follow',
+    method: 'post',
+    data: {
+      'topic.id': id
+    }
+  })
+}
+
+export { add, lstAbout, lstByFollower, lstByCreator, lst, find, follow }

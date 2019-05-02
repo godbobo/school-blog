@@ -22,4 +22,27 @@ function lstFromTarget(id) {
   })
 }
 
-export { lst, lstFromTarget }
+// 删除与某人的聊天记录
+function del(userId) {
+  return request({
+    url: '/message/delete',
+    method: 'post',
+    data: {
+      'user.id': userId
+    }
+  })
+}
+
+// 发送消息
+function send(id, content) {
+  return request({
+    url: '/message/send',
+    method: 'post',
+    data: {
+      'user.id': id,
+      'message.content': content
+    }
+  })
+}
+
+export { lst, lstFromTarget, send, del }
