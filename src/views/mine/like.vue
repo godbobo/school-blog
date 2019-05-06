@@ -8,14 +8,14 @@
             <p class="item-body">{{ essay.summary }}</p>
             <div class="item-footer flex-row-container">
               <div class="left">
-                <el-tag v-for="(tag, tidx) in essay.tags" :key="tidx" :color="tag.background" :style="{ color: tag.color }" :hit="true" class="tag">{{ tag.name }}</el-tag>
                 <div class="count">
                   <span style="color: green;"><svg-icon icon-class="eye-open"/> {{ essay.view }}</span>
                   <span style="color: pink;"><svg-icon icon-class="like"/> {{ essay.lovercount }}</span>
                 </div>
+                <el-tag v-for="(tag, tidx) in essay.tags" :key="tidx" :color="tag.background" :style="{ color: tag.color }" :hit="true" class="tag">{{ tag.name }}</el-tag>
               </div>
               <div class="right">
-                <span class="timestamp">{{ essay.author.name }} 创作于 {{ essay.upt }}</span>
+                <span class="timestamp">{{ essay.author.realName }} 创作于 {{ essay.upt }}</span>
               </div>
             </div>
           </div>
@@ -29,14 +29,14 @@
             <p class="item-body">{{ tpc.summary }}</p>
             <div class="item-footer flex-row-container">
               <div class="left">
-                <el-tag v-for="(tag, tindex) in tpc.tags" :key="tindex" :color="tag.background" :style="{ color: tag.color }" :hit="true" class="tag">{{ tag.name }}</el-tag>
                 <div class="count">
                   <span style="color: #409EFF;"><svg-icon icon-class="user"/> {{ tpc.usercount }}</span>
                   <span style="color: #67C23A;" class="el-icon-document"> {{ tpc.essaycount }}</span>
                 </div>
+                <el-tag v-for="(tag, tindex) in tpc.tags" :key="tindex" :color="tag.background" :style="{ color: tag.color }" :hit="true" class="tag">{{ tag.name }}</el-tag>
               </div>
               <div class="right">
-                <span class="timestamp">{{ tpc.creator.name }} 创建于 {{ tpc.upt }}</span>
+                <span class="timestamp">{{ tpc.creator.realName }} 创建于 {{ tpc.upt }}</span>
               </div>
             </div>
           </div>
@@ -102,6 +102,9 @@ export default {
     font-size: 18px;
     font-weight: bold;
     padding-top: 15px;
+    &:hover {
+        color: red;
+    }
   }
   .item-body {
     color: $secondaryTxt;
@@ -111,6 +114,9 @@ export default {
   .item-footer {
     justify-content: space-between;
     .left {
+      .tag {
+          margin-left: 10px;
+        }
       .count {
         display: inline;
         margin-left: 10px;

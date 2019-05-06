@@ -3,43 +3,38 @@
     <el-tabs v-model="activeName">
       <el-tab-pane label="用户列表" name="lst">
         <div class="table-top-toolbar border-shadow">
-          <el-button type="primary" size="small" icon="el-icon-plus" @click="clickAddUser">新增用户</el-button>
+          <div class="right-option">
+            <el-button v-if="multiplesection.length > 0" type="primary" size="small" icon="el-icon-delete" @click="batchDeleteUser">批量删除</el-button>
+            <el-button type="primary" size="small" icon="el-icon-plus" @click="clickAddUser">新增用户</el-button>
+          </div>
+
           <el-input v-model="filtertxt" class="input-with-select" placeholder="请输入搜索内容" @change="handleFilterChanged">
             <el-select slot="prepend" v-model="filtertype" class="select-type">
-              <el-option :value="0" label="不过滤"/>
-              <el-option :value="1" label="按用户id"/>
-              <el-option :value="2" label="按姓名"/>
-              <el-option :value="3" label="按所在院系"/>
+              <el-option :value="0" label="请选择"/>
+              <el-option :value="1" label="登录名"/>
+              <el-option :value="2" label="姓名"/>
+              <el-option :value="3" label="院系"/>
             </el-select>
             <el-button slot="append" icon="el-icon-search" @click="handleFilterChanged">搜索</el-button>
           </el-input>
         </div>
-        <el-table ref="filterTable" :data="tableData" :stripe="true" style="width: 100%">
+        <el-table ref="filterTable" :data="tableData" :stripe="true" style="width: 100%" @selection-change="handleSectionChanged">
           <el-table-column label="选择" type="selection"/>
+          <el-table-column :index="indexstart" type="index" width="50"/>
           <el-table-column
-            prop="id"
-            label="编号"
+            prop="loginname"
+            label="登录名"
             sortable
             column-key="id"
           />
-          <el-table-column prop="name" label="姓名"/>
+          <el-table-column prop="realName" label="姓名"/>
           <el-table-column prop="college" label="系别"/>
-          <el-table-column :formatter="formatter" prop="role" label="角色"/>
-          <el-table-column prop="tel" label="电话"/>
+          <el-table-column :formatter="formatter" width="120" prop="role" label="角色"/>
+          <el-table-column prop="tel" width="120" label="电话"/>
           <el-table-column label="操作">
             <template slot-scope="scope">
-              <el-button size="mini">编辑</el-button>
-              <el-button size="mini" type="danger">删除</el-button>
-              <el-dropdown trigger="click">
-                <span class="el-dropdown-link">
-                  更多<i class="el-icon-arrow-down el-icon--right"/>
-                </span>
-                <el-dropdown-menu slot="dropdown">
-                  <el-dropdown-item>Ta 的文章</el-dropdown-item>
-                  <el-dropdown-item>Ta 参与的话题</el-dropdown-item>
-                  <el-dropdown-item>Ta 的资料</el-dropdown-item>
-                </el-dropdown-menu>
-              </el-dropdown>
+              <el-button size="mini" @click="resetPwd(scope.row)">重置密码</el-button>
+              <el-button size="mini" type="danger" @click="deleteUser(scope.row)">删除</el-button>
             </template>
           </el-table-column>
         </el-table>
@@ -57,15 +52,15 @@
       </el-tab-pane>
     </el-tabs>
     <el-dialog :visible.sync="addUserDialogVisible" :close-on-click-modal="true" title="添加用户" width="40%">
-      <el-form ref="adduserform" :model="userform" :rules="rulesuserform">
+      <el-form ref="adduserform" :model="userform" :rules="rulesuserform" size="small">
+        <el-form-item label="登录名:" prop="loginname">
+          <el-input v-model="userform.loginname" auto-complete="off"/>
+        </el-form-item>
         <el-form-item label="姓名:" prop="name">
           <el-input v-model="userform.name" auto-complete="off"/>
         </el-form-item>
         <el-form-item label="院系:" prop="college">
           <el-input v-model="userform.college"/>
-        </el-form-item>
-        <el-form-item label="手机号:" prop="tel">
-          <el-input v-model="userform.tel" type="tel"/>
         </el-form-item>
         <el-form-item label="角色:" prop="role">
           <el-radio v-model="userform.role" label="0">学生</el-radio>
@@ -90,28 +85,30 @@ export default {
   data() {
     return {
       activeName: 'lst', // 当前 tab 页面
+      multiplesection: [], // 选中的数据
       tableData: [], // 表格中用户数据
       tablerows: 0, // 查询结果总数
       rows: 15, // 每页显示数量
       pageindex: 1, // 当前页,分页使用该默认值作为起点，但服务器端使用0作为起点
       addUserDialogVisible: false, // 添加用户弹出框
       userform: {
+        loginname: '',
         name: '',
         college: '',
-        tel: undefined,
         role: '0'
       }, // 用户表单信息
       rulesuserform: {
+        loginname: [
+          { required: true, message: '登录名不能为空', trigger: 'blur' },
+          { min: 4, message: '长度最少为 4 个字符', trigger: 'blur' },
+          { pattern: /^[A-Za-z0-9]+$/, message: '必须为字母或数字', trigger: 'blur' }
+        ],
         name: [
           { required: true, message: '姓名不能为空', trigger: 'blur' },
           { min: 2, max: 20, message: '长度在 2-20 个字符', trigger: 'blur' }
         ],
         college: [
           { required: true, message: '院系不能为空', trigger: 'blur' }
-        ],
-        tel: [
-          { required: true, message: '手机号不能为空', trigger: 'blur' },
-          { pattern: /^1[34578]\d{9}$/, message: '请输入正确的手机号', trigger: 'blur' }
         ],
         role: [
           { type: 'enum', enum: ['0', '1', '2'], message: '非法角色属性', trigger: 'blur' }
@@ -125,6 +122,9 @@ export default {
     }
   },
   computed: {
+    indexstart() {
+      return this.rows * (this.pageindex - 1) + 1
+    }
   },
   created() {
     this.handleUserList(this.pageindex)
@@ -146,20 +146,26 @@ export default {
     },
     handleUserList() {
       // 得出查询类型
-      this.$store.dispatch('UserGetLst', { currentpage: this.pageindex - 1, size: this.rows, type: this.filtertype, arg1: this.filtertxt }).then(response => {
-        this.tableData = response.lst
-        this.tablerows = response.total
-      })
+      if (this.filtertype === 1 && parseInt(this.filtertxt).toString() === 'NaN') {
+        this.$message({
+          message: '登录名格式不正确',
+          type: 'error'
+        })
+      } else {
+        this.$store.dispatch('UserGetLst', { currentpage: this.pageindex - 1, size: this.rows, type: this.filtertype, arg1: this.filtertxt }).then(response => {
+          this.tableData = response.lst
+          this.tablerows = response.total
+        })
+      }
     },
     handleAddUser() {
       this.$refs.adduserform.validate(valid => {
         if (valid) {
           this.adduserbtnloading = true
-          this.$store.dispatch('UserAdd', this.userform).then(response => {
+          user.add(this.userform).then(response => {
             this.adduserbtnloading = false
             this.addUserDialogVisible = false
             // 若增加用户成功则刷新列表
-
             this.handleUserList()
           }).catch(() => {
             this.adduserbtnloading = false
@@ -170,8 +176,14 @@ export default {
       })
     },
     handleFilterChanged() {
-      this.pageindex = 1
-      this.handleUserList()
+      if (this.pageindex !== 1) {
+        this.pageindex = 1
+      } else {
+        this.handleUserList()
+      }
+    },
+    handleSectionChanged(val) {
+      this.multiplesection = val
     },
     handlePageChanged(val) {
       this.pageindex = val
@@ -180,6 +192,33 @@ export default {
     handleSuccess({ results, header }) {
       this.uploadtabledata = results
       this.uploadtableheader = header
+    },
+    deleteUser(row) {
+      user.del(row.id).then(data => {
+        this.handleUserList()
+      })
+    },
+    resetPwd(row) { // 重置密码
+      if (this.$store.getters.roles > 0) { // 教师及管理员拥有重置密码权限
+        user.resetPwd(row.id).then(data => {
+          this.$notify({
+            title: '重置密码成功',
+            message: '密码默认为 <span style="color: red">111111</span> ，请提醒该用户及时修改密码',
+            type: 'success',
+            dangerouslyUseHTMLString: true
+          })
+        })
+      }
+    },
+    batchDeleteUser() {
+      // 获取每一项数据的id
+      const ids = []
+      this.multiplesection.map(val => {
+        ids.push(val.id)
+      })
+      user.batchDelete(...ids).then(data => {
+        this.handleUserList()
+      })
     },
     uploadExcel() {
       if (this.uploadtableheader && this.uploadtableheader.length > 0 && this.uploadtabledata && this.uploadtabledata.length > 0) {

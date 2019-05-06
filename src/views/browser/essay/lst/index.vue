@@ -21,7 +21,7 @@
                     <el-tag v-for="(tag, tindex) in item.tags" :key="tindex" :color="tag.background" :style="{ color: tag.color }" :hit="true" class="tag">{{ tag.name }}</el-tag>
                   </div>
                   <div class="right">
-                    <span class="timestamp">{{ item.author.name }} 创作于 {{ item.upt }}</span>
+                    <span class="timestamp">{{ item.author.realName }} 创作于 {{ item.upt }}</span>
                   </div>
                 </div>
               </div>
@@ -78,7 +78,7 @@ export default {
   methods: {
     handleLst() {
       this.isloading = true
-      lst(this.pageindex - 1, this.rows, 0).then(response => {
+      lst(this.pageindex - 1, this.rows, 0, 0, '').then(response => {
         this.isloading = false
         // 当第一页时显示置顶文章
         if (this.pageindex === 1 && response.toplst) {

@@ -95,8 +95,25 @@
     </div>
     <div class="profile-footer">
       <el-button type="text">修改资料</el-button>
-      <el-button type="text">修改密码</el-button>
+      <el-button type="text" @click="dialogFormVisible = true">修改密码</el-button>
     </div>
+    <el-dialog :visible.sync="dialogFormVisible" title="修改密码">
+      <el-form ref="ruleForm" :model="form" :rules="rules" status-icon>
+        <el-form-item :label-width="formLabelWidth" label="旧密码" prop="old">
+          <el-input v-model="form.old" type="password" auto-complete="off"/>
+        </el-form-item>
+        <el-form-item :label-width="formLabelWidth" label="新密码" prop="newpwd">
+          <el-input v-model="form.newpwd" type="password" auto-complete="off"/>
+        </el-form-item>
+        <el-form-item :label-width="formLabelWidth" label="确认密码" prop="confirmpwd">
+          <el-input v-model="form.confirmpwd" type="password" auto-complete="off"/>
+        </el-form-item>
+      </el-form>
+      <div slot="footer" class="dialog-footer">
+        <el-button @click="dialogFormVisible = false">取 消</el-button>
+        <el-button type="primary" @click="handleConfirmPwd">确 定</el-button>
+      </div>
+    </el-dialog>
   </div>
 </template>
 
@@ -109,13 +126,50 @@ export default {
     'my-upload': myUpload
   },
   data() {
+    var validatePwd = (rule, value, callback) => {
+      if (value === this.form.old) {
+        callback(new Error('新密码必须和旧密码不同'))
+      } else {
+        callback()
+      }
+    }
+    var validatePwd2 = (rule, value, callback) => {
+      if (value !== this.form.newpwd) {
+        callback(new Error('两次输入密码不一致!'))
+      } else {
+        callback()
+      }
+    }
     return {
       show: false,
       avatorapi: process.env.BASE_API + 'user/avatarUpload',
       header: {
         'Authorization': this.$store.getters.token
       },
-      userinfo: {}
+      userinfo: {},
+      dialogFormVisible: false,
+      form: {
+        old: '',
+        newpwd: '',
+        confirmpwd: ''
+      },
+      rules: {
+        old: [
+          { required: true, message: '请输入旧密码', trigger: 'blur' },
+          { min: 6, max: 20, message: '长度在 6 到 20 个字符', trigger: 'blur' }
+        ],
+        newpwd: [
+          { required: true, message: '请输入新密码', trigger: 'blur' },
+          { min: 6, max: 20, message: '长度在 6 到 20 个字符', trigger: 'blur' },
+          { validator: validatePwd, trigger: 'blur' }
+        ],
+        confirmpwd: [
+          { required: true, message: '请确认新密码', trigger: 'blur' },
+          { min: 6, max: 20, message: '长度在 6 到 20 个字符', trigger: 'blur' },
+          { validator: validatePwd2, trigger: 'blur' }
+        ]
+      },
+      formLabelWidth: '120px'
     }
   },
   computed: {
@@ -140,6 +194,21 @@ export default {
         this.$store.commit('SET_AVATAR', data.data.url)
         this.userinfo.headimg = data.data.url
       }
+    },
+    handleConfirmPwd() { // 提交新密码
+      // 对密码合法性进行验证
+      this.$refs['ruleForm'].validate((valid) => {
+        if (valid) {
+          user.changePwd(this.form.old, this.form.newpwd).then(data => {
+            this.dialogFormVisible = false
+          })
+        } else {
+          this.$message({
+            message: '请修正表单错误后再提交',
+            type: 'error'
+          })
+        }
+      })
     }
   }
 }

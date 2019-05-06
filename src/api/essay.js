@@ -1,15 +1,27 @@
 import request from '@/utils/request'
 
 // 获取文章列表
-function lst(page, rows, type) {
+function lst(page, rows, type, qt, arg) {
+  const p = {
+    page: page,
+    row: rows,
+    queryType: type,
+    'article.type': qt
+  }
+  let params = {}
+  if (qt === 1) {
+    params = Object.assign(p, { 'user.loginname': arg })
+  } else if (qt === 2) {
+    params = Object.assign(p, { 'article.title': arg })
+  } else if (qt === 3) {
+    params = Object.assign(p, { 'article.content': arg })
+  } else {
+    params = p
+  }
   return request({
     url: '/essay/lst',
     method: 'post',
-    data: {
-      page: page,
-      row: rows,
-      queryType: type
-    }
+    data: params
   })
 }
 

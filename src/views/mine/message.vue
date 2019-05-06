@@ -157,17 +157,27 @@ export default {
     getLst(type) {
       msg.lst(type).then(data => {
         if (type === 0) {
-          this.unreadlst = [...this.unreadlst, ...data.lst]
+          if (data.total !== 0) {
+            this.unreadlst = [...this.unreadlst, ...data.lst]
+          } else {
+            this.unreadlst = []
+          }
           this.unreadlsttotal = data.total
         } else if (type === 1) {
-          this.readlst = [...this.readlst, ...data.lst]
+          if (data.total !== 0) {
+            this.readlst = [...this.readlst, ...data.lst]
+          } else {
+            this.readlst = []
+          }
           this.readlsttotal = data.total
         }
       })
     },
     getRecord() {
       msg.lstFromTarget(this.target.id).then(data => {
-        this.recordlst = data.lst.reverse()
+        if (data.total !== 0) {
+          this.recordlst = data.lst.reverse()
+        }
         this.recordtotal = data.total
       })
     },

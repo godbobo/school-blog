@@ -108,10 +108,6 @@ export default {
           if (this.savetype === 1) { // 保存文章
             const topicid = this.uform.addtopic ? this.uform.topic : 0
             essayAdd(this.uform.title, this.uform.summary, this.uform.content, this.uform.tags, topicid).then(response => {
-              this.$message({
-                message: '添加成功',
-                type: 'success'
-              })
               this.dialogVisible = false
             })
           } else { // 保存话题
@@ -127,13 +123,17 @@ export default {
       })
     },
     handleTagLst() {
-      tagLstByUser().then(response => {
-        this.mytags = response.lst
+      tagLstByUser().then(data => {
+        if (data) {
+          this.mytags = data.lst
+        }
       })
     },
     handleTopicLst() {
-      topic.lstAbout().then(response => {
-        this.topicoptions = response.lst
+      topic.lstAbout().then(data => {
+        if (data) {
+          this.topicoptions = data.lst
+        }
       })
     }
   }

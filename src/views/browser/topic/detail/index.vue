@@ -6,7 +6,7 @@
         <el-button type="text" @click="followTopic">加入该话题</el-button>
       </el-tooltip>
       <div class="info">
-        <span>{{ topic.creator.name }} 创建于 {{ topic.upt }}</span>
+        <span>{{ topic.creator.realName }} 创建于 {{ topic.upt }}</span>
       </div>
     </div>
     <el-tabs :stretch="true" class="tab-container">
@@ -20,15 +20,14 @@
             <p class="item-body">{{ essay.summary }}</p>
             <div class="item-footer flex-row-container">
               <div class="left">
-
-                <el-tag v-for="(tag, tindex) in essay.tags" :key="tindex" :color="tag.background" :style="{ color: tag.color }" :hit="true" class="tag">{{ tag.name }}</el-tag>
                 <div class="count">
                   <span style="color: green;"><svg-icon icon-class="eye-open"/> {{ essay.view }}</span>
                   <span style="color: pink;"><svg-icon icon-class="like"/> {{ essay.lovercount }}</span>
                 </div>
+                <el-tag v-for="(tag, tindex) in essay.tags" :key="tindex" :color="tag.background" :style="{ color: tag.color }" :hit="true" class="tag">{{ tag.name }}</el-tag>
               </div>
               <div class="right">
-                <span class="timestamp">{{ essay.author.name }} 创作于 {{ essay.upt }}</span>
+                <span class="timestamp">{{ essay.author.realName }} 创作于 {{ essay.upt }}</span>
               </div>
             </div>
           </div>
@@ -178,7 +177,9 @@ export default {
     },
     getCommentLst() {
       comment.lst(this.commentcurrentpage - 1, this.commnetrows, 1, this.id).then(data => {
-        this.commentlst = data.commentlst
+        if (data.total !== 0) {
+          this.commentlst = data.commentlst
+        }
         this.commenttotal = data.total
       })
     },
@@ -246,6 +247,9 @@ export default {
       .item-footer {
         justify-content: space-between;
         .left {
+          .tag {
+          margin-left: 10px;
+        }
           .count {
             display: inline;
             margin-left: 10px;

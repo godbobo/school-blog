@@ -6,8 +6,10 @@ OpenLink.install = function(Vue, options) {
   Vue.directive('openlink', function(el) {
     el.querySelectorAll('a').forEach(block => {
       block.addEventListener('click', function(e) {
-        e.preventDefault()
-        window.open(block.href, '_blank')
+        if (block.href.indexOf('/') !== 0) { // 保证本应用内的链接依旧在当前标签页打开
+          e.preventDefault()
+          window.open(block.href, '_blank')
+        }
       })
     })
   })

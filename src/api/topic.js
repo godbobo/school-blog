@@ -57,14 +57,26 @@ function lstAbout() {
 }
 
 // 获取话题列表
-function lst(page, rows) {
+function lst(page, rows, type, arg) {
+  const p = {
+    page: page,
+    row: rows,
+    queryType: type
+  }
+  let params = {}
+  if (type === 1) {
+    params = Object.assign(p, { 'user.loginname': arg })
+  } else if (type === 2) {
+    params = Object.assign(p, { 'topic.name': arg })
+  } else if (type === 3) {
+    params = Object.assign(p, { 'topic.summary': arg })
+  } else {
+    params = p
+  }
   return request({
     url: 'topic/lst',
     method: 'post',
-    data: {
-      'row': rows,
-      'page': page
-    }
+    data: params
   })
 }
 

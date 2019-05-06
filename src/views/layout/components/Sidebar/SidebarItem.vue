@@ -4,7 +4,7 @@
     <template v-if="hasOneShowingChild(item.children,item) && (!onlyOneChild.children||onlyOneChild.noShowingChildren)&&!item.alwaysShow">
       <app-link :to="resolvePath(onlyOneChild.path)">
         <el-menu-item :index="resolvePath(onlyOneChild.path)" :class="{'submenu-title-noDropdown':!isNest}">
-          <item v-if="onlyOneChild.meta" :icon="onlyOneChild.meta.icon||item.meta.icon" :title="onlyOneChild.meta.title" />
+          <item v-if="onlyOneChild.meta&&showItem(onlyOneChild)" :icon="onlyOneChild.meta.icon||item.meta.icon" :title="onlyOneChild.meta.title" />
         </el-menu-item>
       </app-link>
     </template>
@@ -67,6 +67,9 @@ export default {
       const showingChildren = children.filter(item => {
         if (item.hidden) {
           return false
+        } else if (item.meta && item.meta.roles && item.meta.roles.indexOf(this.$store.getters.roles) === -1) {
+          // 当前用户的角色如果不在侧边栏定义的路由范围内时，隐藏侧边栏信息
+          return false
         } else {
           // Temp set(will be used if only has one showing child)
           this.onlyOneChild = item
@@ -86,6 +89,12 @@ export default {
       }
 
       return false
+    },
+    showItem(item) {
+      if (item.meta && item.meta.roles && item.meta.roles.indexOf(this.$store.getters.roles) === -1) {
+        return false
+      }
+      return true
     },
     resolvePath(routePath) {
       if (this.isExternalLink(routePath)) {

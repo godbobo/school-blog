@@ -18,7 +18,6 @@ const browserRouter = {
       children: [
         {
           path: 'lst',
-          hide: true,
           component: () => import('@/views/browser/essay/lst'),
           name: 'EssayLst',
           meta: { title: '文章', icon: 'essay' }
@@ -41,7 +40,6 @@ const browserRouter = {
       children: [
         {
           path: 'lst',
-          hide: true,
           component: () => import('@/views/browser/topic/lst'),
           name: 'TopicLst',
           meta: { title: '话题', icon: 'topic' }

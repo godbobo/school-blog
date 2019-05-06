@@ -73,7 +73,17 @@ export const constantRouterMap = [
         path: 'product',
         name: 'Product',
         component: () => import('@/views/mine/product'),
-        meta: { title: '作品', icon: 'product' }
+        meta: { title: '作品', icon: 'product' },
+        children: [
+          {
+            path: 'u/:id',
+            props: true,
+            hidden: true,
+            name: 'ProductById',
+            component: () => import('@/views/mine/product'),
+            meta: { title: '用户' }
+          }
+        ]
       },
       {
         path: 'like',
@@ -102,19 +112,6 @@ export const constantRouterMap = [
     ]
   },
 
-  // {
-  //   path: '/settings',
-  //   component: Layout,
-  //   children: [
-  //     {
-  //       path: '',
-  //       name: 'Settings',
-  //       component: () => import('@/views/settings'),
-  //       meta: { title: '设置', icon: 'setting' }
-  //     }
-  //   ]
-  // },
-
   {
     path: '/create',
     component: Layout,
@@ -132,32 +129,26 @@ export const constantRouterMap = [
     path: '/admin',
     component: Layout,
     redirect: '/admin/user',
-    meta: { title: '管理', icon: 'tree' },
+    meta: { title: '管理', icon: 'tree', roles: [1, 2] },
     name: 'Admin',
     children: [
-      // {
-      //   path: 'system',
-      //   name: 'ManageSystem',
-      //   component: () => import('@/views/admin/system'),
-      //   meta: { title: '系统管理', icon: 'system' }
-      // },
       {
         path: 'user',
         name: 'ManageUser',
         component: () => import('@/views/admin/user'),
-        meta: { title: '用户管理', icon: 'user' }
+        meta: { title: '用户管理', icon: 'user', roles: [1, 2] }
       },
       {
         path: 'essay',
         name: 'ManageEssay',
         component: () => import('@/views/admin/essay'),
-        meta: { title: '文章管理', icon: 'essay' }
+        meta: { title: '文章管理', icon: 'essay', roles: [2] }
       },
       {
         path: 'topic',
         name: 'ManageTopic',
         component: () => import('@/views/admin/topic'),
-        meta: { title: '话题管理', icon: 'topic' }
+        meta: { title: '话题管理', icon: 'topic', roles: [2] }
       }
     ]
   },

@@ -6,7 +6,7 @@
           <div slot="header" class="header">
             <h1>{{ essay.title }}</h1>
             <div class="info">
-              <span>{{ essay.author.name }} 创作于 {{ essay.upt }}</span>
+              <span>{{ essay.author.realName }} 创作于 {{ essay.upt }}</span>
               <span v-if="essay.tags">标签：{{ taglst }}</span>
               <span v-if="essay.topic">所属话题：{{ essay.topic.name }}</span>
             </div>
@@ -49,17 +49,17 @@
               <img :src="essay.author.headimg">
             </div>
             <div class="info">
-              <h2>{{ essay.author.name }}</h2>
+              <h2>{{ essay.author.realName }}</h2>
               <div>{{ essay.author.college }}</div>
             </div>
           </div>
           <div class="footer flex-row-container">
             <div class="item">
-              <div class="title">文章</div>
+              <router-link :to="'/mine/product/u/' + essay.author.id" class="title link">文章</router-link>
               <div class="count">{{ count.wzcount }}</div>
             </div>
             <div class="item">
-              <div class="title">话题</div>
+              <router-link :to="'/mine/product/u/' + essay.author.id" class="title link">话题</router-link>
               <div class="count">{{ count.htcount }}</div>
             </div>
             <div class="item">
@@ -245,7 +245,9 @@ export default {
     },
     handleCommentLst() {
       comment.lst(this.commentpage - 1, this.commentrows, 0, this.id).then(response => {
-        this.commentlst = response.commentlst
+        if (response.total !== 0) {
+          this.commentlst = response.commentlst
+        }
         this.commenttotal = response.total
       })
     },
@@ -385,6 +387,11 @@ export default {
       text-align: center;
       .title {
         font-weight: bold;
+      }
+      .link {
+        &:hover {
+          text-decoration: underline;
+        }
       }
       .count {
         margin-top: 6px;

@@ -5,7 +5,7 @@
       <div class="info">
         <img :src="item.creator.headimg" class="avatar" width="36" height="36">
         <div class="right">
-          <div class="name">{{ item.creator.name }}</div>
+          <div class="name">{{ item.creator.realName }}</div>
           <div class="date">{{ item.upt }}</div>
         </div>
       </div>
@@ -23,8 +23,8 @@
       <div class="reply">
         <div v-for="(reply, ind) in item.childs" :key="ind" class="item">
           <div class="reply-content">
-            <span class="from-name">{{ reply.creator.name }}</span><span>: </span>
-            <span class="to-name">@{{ reply.targetUser.name }}</span>
+            <span class="from-name">{{ reply.creator.realName }}</span><span>: </span>
+            <span class="to-name">@{{ reply.targetUser.realName }}</span>
             <span>{{ reply.content }}</span>
           </div>
           <div class="reply-bottom">
@@ -111,7 +111,7 @@ export default {
       if (this.reply) {
         let content = this.inputComment
         // 去掉提示用户的@xxx
-        const tip = `@${this.reply.creator.name} `
+        const tip = `@${this.reply.creator.realName} `
         if (content.indexOf(tip) === 0) {
           content = content.substr(tip.length, content.length - tip.length)
         }
@@ -129,7 +129,7 @@ export default {
        */
     showCommentInput(item, reply) {
       if (reply) {
-        this.inputComment = '@' + reply.creator.name + ' '
+        this.inputComment = '@' + reply.creator.realName + ' '
         this.reply = reply
         console.log(this.reply)
       } else {

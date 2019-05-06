@@ -6,9 +6,9 @@ import * as qtp from '@/common/var'
 function getUserLst(row = 10, page = 0, type = qtp.QUERY_USERLST_NORMAL, arg) {
   let args = {}
   if (type === qtp.QUERY_USERLST_USERNAME) {
-    args = { 'user.id': arg }
+    args = { 'user.loginname': arg }
   } else if (type === qtp.QUERY_USERLST_NAME) {
-    args = { 'user.name': arg }
+    args = { 'user.realName': arg }
   } else if (type === qtp.QUERY_USERLST_COLLEGE) {
     args = { 'user.college': arg }
   }
@@ -20,12 +20,27 @@ function getUserLst(row = 10, page = 0, type = qtp.QUERY_USERLST_NORMAL, arg) {
   })
 }
 
-function addUser(...values) {
+function add(user) {
   return request({
     url: '/user/add',
     method: 'post',
     data: {
-      queryList: values
+      'user.loginname': user.loginname,
+      'user.realName': user.name,
+      'user.college': user.college,
+      'user.tel': user.tel,
+      'user.role': user.role
+    }
+  })
+}
+
+// 批量删除用户
+function batchDelete(...vals) {
+  return request({
+    url: '/user/batchDelete',
+    method: 'post',
+    data: {
+      queryList: vals
     }
   })
 }
@@ -75,4 +90,38 @@ function get() {
   })
 }
 
-export { getUserLst, addUser, userCount, userFollow, get, batchAddUser }
+// 删除用户
+function del(id) {
+  return request({
+    url: 'user/delete',
+    method: 'post',
+    data: {
+      'user.id': id
+    }
+  })
+}
+
+// 修改用户密码
+function changePwd(oldPwd, newPwd) {
+  return request({
+    url: 'user/changePwd',
+    method: 'post',
+    data: {
+      'oldPwd': oldPwd,
+      'newPwd': newPwd
+    }
+  })
+}
+
+// 重置密码
+function resetPwd(id) {
+  return request({
+    url: 'user/resetPwd',
+    method: 'post',
+    data: {
+      'user.id': id
+    }
+  })
+}
+
+export { getUserLst, add, userCount, userFollow, get, batchAddUser, del, batchDelete, changePwd, resetPwd }

@@ -21,7 +21,7 @@
                     <el-tag v-for="(tag, tidx) in titem.tags" :key="tidx" :color="tag.background" :style="{ color: tag.color }" :hit="true" class="tag">{{ tag.name }}</el-tag>
                   </div>
                   <div class="right">
-                    <span class="timestamp">{{ titem.creator.name }} 创建于 {{ titem.upt }}</span>
+                    <span class="timestamp">{{ titem.creator.realName }} 创建于 {{ titem.upt }}</span>
                   </div>
                 </div>
               </div>
@@ -77,7 +77,9 @@ export default {
     },
     getAboutLst() {
       topic.lstAbout().then(data => {
-        this.aboutlst = data.lst
+        if (data) {
+          this.aboutlst = data.lst
+        }
       })
     },
     handlePageChange(val) {
