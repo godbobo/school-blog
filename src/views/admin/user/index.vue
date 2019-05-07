@@ -41,7 +41,7 @@
         <el-pagination :total="tablerows" :page-size="rows" :current-page="pageindex" class="pagination-margin" background layout="prev, pager, next" @current-change="handlePageChanged"/>
       </el-tab-pane>
       <el-tab-pane label="批量增加" name="add">
-        <el-alert style="margin-bottom:10px;" title="您上传的Excel文件必须在表头包含role;name;loginname字段，表头信息必须正确才可以识别，详细信息可下载示例文档：" type="warning" show-icon><a class="alert-link" href="http://localhost/upload/example/mock01.xlsx">示例文档</a></el-alert>
+        <el-alert style="margin-bottom:10px;" title="您上传的Excel文件必须在表头包含role;name;loginname字段，表头信息必须正确才可以识别，详细信息可下载示例文档：" type="warning" show-icon><a :href="exampleurl" class="alert-link">示例文档</a></el-alert>
         <upload-excel-component ref="uploadfile" :on-success="handleSuccess"/>
         <div class="upload-wrap">
           <el-button type="primary" icon="el-icon-upload" @click="uploadExcel">确定上传</el-button>
@@ -118,7 +118,8 @@ export default {
       filtertxt: '', // 查询关键字
       filtertype: 0,
       uploadtabledata: [],
-      uploadtableheader: []
+      uploadtableheader: [],
+      exampleurl: process.env.FILE_URI + 'example/mock01.xlsx'
     }
   },
   computed: {

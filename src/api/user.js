@@ -82,6 +82,14 @@ function userFollow(id, type) {
   })
 }
 
+// 获取关注用户列表
+function followLst() {
+  return request({
+    url: '/user/follows',
+    method: 'get'
+  })
+}
+
 // 获取用户信息
 function get() {
   return request({
@@ -113,6 +121,15 @@ function changePwd(oldPwd, newPwd) {
   })
 }
 
+// 修改用户资料
+function changeUserinfo(user) {
+  return request({
+    url: '/user/change-info',
+    method: 'post',
+    data: user
+  })
+}
+
 // 重置密码
 function resetPwd(id) {
   return request({
@@ -124,4 +141,4 @@ function resetPwd(id) {
   })
 }
 
-export { getUserLst, add, userCount, userFollow, get, batchAddUser, del, batchDelete, changePwd, resetPwd }
+export { getUserLst, add, userCount, userFollow, get, batchAddUser, del, batchDelete, changePwd, resetPwd, followLst, changeUserinfo }

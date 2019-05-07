@@ -13,7 +13,7 @@
                   <img :src="unread.creator.headimg">
                 </div>
                 <div class="info">
-                  <span>{{ unread.creator.name }}({{ unread.repeat }})</span>
+                  <span>{{ unread.creator.realName }}({{ unread.repeat }})</span>
                   <p>{{ unread.content }}</p>
                 </div>
                 <!-- <div class="option">
@@ -30,7 +30,7 @@
                   <img :src="read.creator.headimg">
                 </div>
                 <div class="info">
-                  <span>{{ read.creator.name }}</span>
+                  <span>{{ read.creator.realName }}</span>
                   <p>{{ read.content }}</p>
                 </div>
                 <!-- <div class="option">
@@ -50,8 +50,8 @@
           <div class="body">
             <div v-for="(record, cdx) in recordlst" :key="cdx" class="chat-item flex-row-container">
               <div class="name">
-                <a v-if="!showLink(record.creator.id)">{{ record.creator.name }}:</a>
-                <span v-if="showLink(record.creator.id)">{{ record.creator.name }}:</span>
+                <a v-if="!showLink(record.creator.id)">{{ record.creator.realName }}:</a>
+                <span v-if="showLink(record.creator.id)">{{ record.creator.realName }}:</span>
               </div>
               <div class="content">
                 <p v-if="record.type in [0,1,2]" v-html="record.content"/>

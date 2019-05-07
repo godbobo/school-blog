@@ -52,12 +52,6 @@ import * as essay from '@/api/essay'
 import * as topic from '@/api/topic'
 export default {
   name: 'MineProduct',
-  props: {
-    id: {
-      type: String,
-      default: '0'
-    }
-  },
   data() {
     return {
       essaylst: [], // 文章列表
@@ -71,7 +65,7 @@ export default {
   },
   computed: {
     currentId() {
-      return this.id === '0' ? this.$store.getters.username : this.id
+      return this.$route.params.id ? this.$route.params.id : this.$store.getters.username
     }
   },
   watch: {
